@@ -738,10 +738,6 @@ void * fetcher(void * arg)
 int main(int argc, char * argv[])
 {
     init();
-    mkdir("raw_files",0777);
-    mkdir("results",0777);
-    mkdir("cha_raw_files",0777);
-    mkdir("cha_results",0777);
     pthread_t tid;
     ARG *arg;
     MYSQL_RES *res;
