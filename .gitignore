@@ -1,0 +1,9 @@
+*/results/*
+*/cha_results/*
+*/raw_files/*
+*/cha_raw_files/*
+
+*.log
+*.bott
+
+nohup.out
