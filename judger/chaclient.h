@@ -26,6 +26,8 @@
 #include <sys/ptrace.h>
 #include <sys/syscall.h>
 #include <sys/user.h>
+#include <sys/stat.h>
+#include <sys/sendfile.h>
 
 #include <netinet/in.h>
 
@@ -38,7 +40,7 @@
 
 using namespace std;
 
-#define MAX_DATA_SIZE 6553500
+#define MAX_DATA_SIZE 4096
 #define CHECK_STATUS 1
 #define NEED_JUDGE 2
 #define SEND_DATA 3

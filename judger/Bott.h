@@ -222,7 +222,6 @@ class Bott
         string cha_detail; //!< Member variable "cha_detail"
 
         map <string,string> infos;
-        char buffer[MAX_DATA_SIZE];
         fstream fin;
 
         string parseUntil(string end);

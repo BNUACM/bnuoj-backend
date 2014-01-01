@@ -96,11 +96,11 @@ int receive_command() {
     int got_things=false;
     int num;
     FILE *target_file;
-    target_file=fopen("temp.bott","w");
+    target_file=fopen("temp.bott","wb");
     while ((num=recv(sockfd,buffer,MAX_DATA_SIZE,MSG_DONTWAIT))>0)
     {
         got_things=true;
-        fputs(buffer,target_file);
+        fwrite(buffer,sizeof(char),num,target_file);
     }
     fclose(target_file);
     if (num==0) return -1;
@@ -229,9 +229,10 @@ string Inttostring(int x) {
 void send_result(string filename) {
     LOG("Sending "+filename);
     int source=open(filename.c_str(),O_RDONLY),num;
-    memset(buffer,0,sizeof(buffer));
-    while((num=read(source,buffer,sizeof(buffer)))>0)
-        write(sockfd,buffer,num);
+    struct stat stat_buf;
+    off_t offset=0;
+    fstat(source, &stat_buf);
+    sendfile(sockfd,source,&offset,stat_buf.st_size);
     close(source);
     LOG("Sent.");
 }
