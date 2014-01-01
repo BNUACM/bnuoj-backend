@@ -13,7 +13,6 @@ struct ARG {
     int fd;
 };
 
-bool portreuse[70000]={false};
 Judger_data *head,*tail;
 bool thread_busy[MAX_JUDGER_NUMBER];
 bool used[MAX_JUDGER_NUMBER];
