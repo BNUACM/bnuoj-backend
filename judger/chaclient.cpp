@@ -56,9 +56,6 @@ void send_register_info()
 
 void connect_server(int argc, char *argv[]) {
     int port_number;
-    mkdir("cha_results",0777);
-    //mkdir("cha_results");
-    mkdir("results",0777);
     if (argc!=3) {
         printf("Illegal call!\nPlease follow the format below!\n%s <IP address> <port>\n",argv[0]);
         exit(1);
