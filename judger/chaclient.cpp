@@ -229,10 +229,9 @@ string Inttostring(int x) {
 void send_result(string filename) {
     LOG("Sending "+filename);
     int source=open(filename.c_str(),O_RDONLY),num;
-    struct stat stat_buf;
-    off_t offset=0;
-    fstat(source, &stat_buf);
-    sendfile(sockfd,source,&offset,stat_buf.st_size);
+    memset(buffer,0,sizeof(buffer));
+    while((num=read(source,buffer,sizeof(buffer)))>0)
+        write(sockfd,buffer,num);
     close(source);
     LOG("Sent.");
 }

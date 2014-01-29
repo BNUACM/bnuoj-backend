@@ -27,7 +27,6 @@
 #include <sys/syscall.h>
 #include <sys/user.h>
 #include <sys/stat.h>
-#include <sys/sendfile.h>
 
 #include <netinet/in.h>
 

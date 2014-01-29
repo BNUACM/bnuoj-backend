@@ -19,7 +19,7 @@ Logger::~Logger()
     //dtor
 }
 
-void Logger::writelog(char* log)
+void Logger::writelog(const char* log)
 {
     FILE * fp=fopen(filename.c_str(),"a");
     while (fp==NULL) fp=fopen(filename.c_str(),"a");
@@ -30,9 +30,9 @@ void Logger::writelog(char* log)
     }
 }
 
-void Logger::writelog(const char* log)
+void Logger::writelog(char* log)
 {
-    writelog((char*)log);
+    writelog((const char*)log);
 }
 
 void Logger::writelog(string log)

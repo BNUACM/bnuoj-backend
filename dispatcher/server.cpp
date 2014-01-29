@@ -13,134 +13,125 @@ struct ARG {
     int fd;
 };
 
-Judger_data *head,*tail;
+Judger_data *head, *tail;
 bool thread_busy[MAX_JUDGER_NUMBER];
 bool used[MAX_JUDGER_NUMBER];
 Judger_data dorunid[MAX_JUDGER_NUMBER];
 string jvname[MAX_JUDGER_NUMBER];
 int temp_num;
 int queuesize;
-pthread_mutex_t mutex_link=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_link = PTHREAD_MUTEX_INITIALIZER;
 
-void writelog(char * templog)
-{
-    FILE *fp=fopen(logfile,"a");
-    if (fp!=NULL) {
-        fprintf(fp,"%s",templog);
+void writelog(const char * templog) {
+    FILE *fp = fopen(config["log_file"].c_str(), "a");
+    if (fp != NULL) {
+        fprintf(fp, "%s", templog);
         fclose(fp);
     }
 }
 
-void writelog(const char * templog)
-{
-    writelog((char * )templog);
-}
-
-void writelog(string templog)
-{
+void writelog(string templog) {
     writelog(templog.c_str());
 }
 
-void result_dealer(char filename[200],int temp_pid,int temp_runid,int temp_cid,char temp_username[])
-{
-    MYSQL * mysql;
+void result_dealer(char filename[200],int temp_pid,int temp_runid,int temp_cid,char temp_username[]) {
+    MYSQL * mysql = (MYSQL *)malloc(sizeof(MYSQL));
     MYSQL_RES *res;
     MYSQL_ROW row;
-    mysql=(MYSQL *)malloc(sizeof(MYSQL));
     mysql_init(mysql);
-    if (!mysql_real_connect(mysql,NULL,db_user,db_pass,db_table,MYSQL_PORT,NULL,0)) {
+    if (!mysql_real_connect(mysql, NULL, config["database_user"].c_str(), config["database_password"].c_str(), config["database_table"].c_str(), MYSQL_PORT, NULL, 0)) {
         perror("cannot connect mysql!\n");
         exit(1);
     }
-    mysql_query(mysql,"set names utf8");
-    FILE *target_file=fopen(filename,"r");
-    int type,ri,mu,tu;
-    char resu[100]={0};
+    mysql_query(mysql, "set names utf8");
+    FILE *target_file = fopen(filename, "r");
+    int type, ri, mu, tu;
+    char resu[100] = {0};
     char ts[10][50];
-    fscanf(target_file,"%s %d\n%s %d\n%s %d\n%s %d\n%s ",ts[0],&type,ts[1],&ri,ts[2],&mu,ts[3],&tu,ts[4]);
-    fgets(resu,100,target_file);
-    char update[200]={0};
-    sprintf(update,"SELECT username,contest_belong,pid FROM status WHERE runid=%d",ri);
-    mysql_query(mysql,update);
-    res=mysql_use_result(mysql);
-    row=mysql_fetch_row(res);
-    temp_runid=ri;
-    strcpy(temp_username,row[0]);
-    temp_cid=atoi(row[1]);
-    temp_pid=atoi(row[2]);
+    fscanf(target_file,"%s %d\n%s %d\n%s %d\n%s %d\n%s ", ts[0], &type, ts[1], &ri, ts[2], &mu, ts[3], &tu, ts[4]);
+    fgets(resu, 100, target_file);
+    char update[200] = {0};
+    sprintf(update, "SELECT username,contest_belong,pid FROM status WHERE runid=%d",ri);
+    mysql_query(mysql, update);
+    res = mysql_use_result(mysql);
+    row = mysql_fetch_row(res);
+    temp_runid = ri;
+    strcpy(temp_username, row[0]);
+    temp_cid = atoi(row[1]);
+    temp_pid = atoi(row[2]);
     mysql_free_result(res);
-    resu[strlen(resu)-1]=0;
-    sprintf(update,"UPDATE status set result='%s', memory_used=%d, time_used=%d WHERE runid=%d",resu,mu,tu,ri);
-    mysql_query(mysql,update);
-    if (strcmp(resu,"Accepted")==0) {
-        sprintf(update,"SELECT count(*) FROM status WHERE username='%s' AND pid='%d' AND result='Accepted'",temp_username,temp_pid);
-        mysql_query(mysql,update);
-        res=mysql_use_result(mysql);
-        row=mysql_fetch_row(res);
-        if (atoi(row[0])==1) {
+    resu[strlen(resu)-1] = 0;
+    sprintf(update, "UPDATE status set result='%s', memory_used=%d, time_used=%d WHERE runid=%d", resu, mu, tu, ri);
+    mysql_query(mysql, update);
+    if (strcmp(resu, "Accepted") == 0) {
+        sprintf(update, "SELECT count(*) FROM status WHERE username='%s' AND pid='%d' AND result='Accepted'", temp_username, temp_pid);
+        mysql_query(mysql, update);
+        res = mysql_use_result(mysql);
+        row = mysql_fetch_row(res);
+        if (atoi(row[0]) == 1) {
             mysql_free_result(res);
-            sprintf(update,"UPDATE user set total_ac=total_ac+1 WHERE username='%s'",temp_username);
-            mysql_query(mysql,update);
-            res=mysql_use_result(mysql);
+            sprintf(update, "UPDATE user set total_ac=total_ac+1 WHERE username='%s'", temp_username);
+            mysql_query(mysql, update);
+            res = mysql_use_result(mysql);
         }
         mysql_free_result(res);
-        sprintf(update,"UPDATE problem set total_ac=total_ac+1 WHERE pid=%d",temp_pid);
+        sprintf(update, "UPDATE problem set total_ac=total_ac+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Wrong Answer")==0) {
-        sprintf(update,"UPDATE problem set total_wa=total_wa+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Wrong Answer") == 0) {
+        sprintf(update, "UPDATE problem set total_wa=total_wa+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Runtime Error")==0) {
-        sprintf(update,"UPDATE problem set total_re=total_re+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Runtime Error") == 0) {
+        sprintf(update, "UPDATE problem set total_re=total_re+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Presentation Error")==0) {
-        sprintf(update,"UPDATE problem set total_pe=total_pe+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Presentation Error") == 0) {
+        sprintf(update, "UPDATE problem set total_pe=total_pe+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Time Limit Exceed")==0) {
-        sprintf(update,"UPDATE problem set total_tle=total_tle+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Time Limit Exceed") == 0) {
+        sprintf(update, "UPDATE problem set total_tle=total_tle+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Memory Limit Exceed")==0) {
-        sprintf(update,"UPDATE problem set total_mle=total_mle+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Memory Limit Exceed") == 0) {
+        sprintf(update, "UPDATE problem set total_mle=total_mle+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Output Limit Exceed")==0) {
-        sprintf(update,"UPDATE problem set total_ole=total_ole+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Output Limit Exceed") == 0) {
+        sprintf(update, "UPDATE problem set total_ole=total_ole+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Restricted Function")==0) {
-        sprintf(update,"UPDATE problem set total_rf=total_rf+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Restricted Function") == 0) {
+        sprintf(update, "UPDATE problem set total_rf=total_rf+1 WHERE pid=%d", temp_pid);
     }
-    else if (strcmp(resu,"Compile Error")==0) {
-        sprintf(update,"UPDATE problem set total_ce=total_ce+1 WHERE pid=%d",temp_pid);
+    else if (strcmp(resu, "Compile Error") == 0) {
+        sprintf(update, "UPDATE problem set total_ce=total_ce+1 WHERE pid=%d", temp_pid);
     }
-    mysql_query(mysql,update);
-    char tempce[50000]={0};
-    char ce_info_data[MAX_DATA_SIZE]={0};
-    char ceupdate[MAX_DATA_SIZE]={0};
-    while (strcmp(tempce,"__COMPILE-INFO-BEGIN-LABLE__")!=0&&strcmp(tempce,"__COMPILE-INFO-BEGIN-LABLE__\n")!=0&&strcmp(tempce,"__COMPILE-INFO-BEGIN-LABLE__\r\n")!=0) fgets(tempce,50000,target_file);
+    mysql_query(mysql, update);
+    char tempce[50000] = {0};
+    char ce_info_data[MAX_DATA_SIZE] = {0};
+    char ceupdate[MAX_DATA_SIZE] = {0};
+    while (strcmp(tempce, "__COMPILE-INFO-BEGIN-LABLE__") != 0 && strcmp(tempce,"__COMPILE-INFO-BEGIN-LABLE__\n") != 0 && strcmp(tempce,"__COMPILE-INFO-BEGIN-LABLE__\r\n") != 0) fgets(tempce,50000,target_file);
     while (1) {
-        fgets(tempce,50000,target_file);
-        if (strcmp(tempce,"__COMPILE-INFO-END-LABLE__")==0||strcmp(tempce,"__COMPILE-INFO-END-LABLE__\n")==0||strcmp(tempce,"__COMPILE-INFO-END-LABLE__\r\n")==0) break;
-        strcat(ce_info_data,tempce);
+        fgets(tempce, 50000, target_file);
+        if (strcmp(tempce, "__COMPILE-INFO-END-LABLE__") == 0 || strcmp(tempce, "__COMPILE-INFO-END-LABLE__\n") == 0 || strcmp(tempce, "__COMPILE-INFO-END-LABLE__\r\n") == 0) break;
+        strcat(ce_info_data, tempce);
     }
     std::string str1;
-    str1=ce_info_data;
-    int lastpos=0;
+    str1 = ce_info_data;
+    int lastpos = 0;
 
-    while (str1.find("\\",lastpos,1)!=std::string::npos) {
-        lastpos=str1.find("\\",lastpos,1);
-        str1.replace(lastpos,1,"\\\\");
-        lastpos+=2;
+    while (str1.find("\\", lastpos, 1) != std::string::npos) {
+        lastpos = str1.find("\\", lastpos, 1);
+        str1.replace(lastpos, 1, "\\\\");
+        lastpos += 2;
     }
     
     lastpos=0;
-    while (str1.find("\"",lastpos,1)!=std::string::npos) {
-        lastpos=str1.find("\"",lastpos,1);
-        str1.replace(lastpos,1,"\\\"");
-        lastpos+=2;
+    while (str1.find("\"", lastpos, 1) != std::string::npos) {
+        lastpos = str1.find("\"", lastpos, 1);
+        str1.replace(lastpos, 1, "\\\"");
+        lastpos += 2;
     }
-    strcpy(ce_info_data,str1.c_str());
-    sprintf(ceupdate,"UPDATE status set ce_info=\"%s\" WHERE runid=%d",ce_info_data,ri);
-    mysql_query(mysql,ceupdate);
-    char templog[200]={0};
-    sprintf(templog,"Received a result, user: %s, runid: %d result:%s\n",temp_username,temp_runid,resu);
+    strcpy(ce_info_data, str1.c_str());
+    sprintf(ceupdate, "UPDATE status set ce_info=\"%s\" WHERE runid=%d", ce_info_data, ri);
+    mysql_query(mysql, ceupdate);
+    char templog[200] = {0};
+    sprintf(templog, "Received a result, user: %s, runid: %d result:%s\n", temp_username, temp_runid, resu);
     writelog(templog);
     fclose(target_file);
     mysql_close(mysql);
@@ -161,7 +152,7 @@ bool dealneed_judge(ARG * arg,Judger_data *temp) {
     writelog(templog);
     mysql=(MYSQL *)malloc(sizeof(MYSQL));
     mysql_init(mysql);
-    if (!mysql_real_connect(mysql,NULL,db_user,db_pass,db_table,MYSQL_PORT,NULL,0)) {
+	if (!mysql_real_connect(mysql, NULL, config["database_user"].c_str(), config["database_password"].c_str(), config["database_table"].c_str(), MYSQL_PORT, NULL, 0)) {
         perror("cannot connect mysql!\n");
         exit(1);
     }
@@ -287,7 +278,7 @@ void cha_result_dealer(char filename[200],int temp_chaid)
     MYSQL * mysql;
     mysql=(MYSQL *)malloc(sizeof(MYSQL));
     mysql_init(mysql);
-    if (!mysql_real_connect(mysql,NULL,db_user,db_pass,db_table,MYSQL_PORT,NULL,0)) {
+    if (!mysql_real_connect(mysql, NULL, config["database_user"].c_str(), config["database_password"].c_str(), config["database_table"].c_str(), MYSQL_PORT, NULL, 0)) {
         perror("cannot connect mysql!\n");
         exit(1);
     }
@@ -305,7 +296,7 @@ void cha_result_dealer(char filename[200],int temp_chaid)
     if (strcmp(resu,"Challenge Success")==0) {
         char query[300]={0};
         sprintf(query,"SELECT runid FROM challenge WHERE cha_id=%d",ci);
-        int temp_t=mysql_real_query(mysql,query,strlen(query));
+        mysql_real_query(mysql,query,strlen(query));
         MYSQL_RES *res=mysql_use_result(mysql);
         MYSQL_ROW row=mysql_fetch_row(res);
         int temp_runid=atoi(row[0]);
@@ -356,7 +347,7 @@ bool dealdo_challenge(ARG * arg,Judger_data *temp) {
     writelog(templog);
     mysql=(MYSQL *)malloc(sizeof(MYSQL));
     mysql_init(mysql);
-    if (!mysql_real_connect(mysql,NULL,db_user,db_pass,db_table,MYSQL_PORT,NULL,0)) {
+    if (!mysql_real_connect(mysql, NULL, config["database_user"].c_str(), config["database_password"].c_str(), config["database_table"].c_str(), MYSQL_PORT, NULL, 0)) {
         perror("cannot connect mysql!\n");
         exit(1);
     }
@@ -484,7 +475,7 @@ void judger_thread(ARG* arg)
 }
 
 
-void * function (void * arg)
+void * thread_function (void * arg)
 {
     int fd=((ARG *)arg)->fd;
     int tnum=((ARG *)arg)->num;
@@ -504,7 +495,7 @@ void * function (void * arg)
     char connect_type[50]={0};
     sscanf(buffer,"%s",connect_type);
     printf("current fd:%d\n",fd);
-    if (strcmp(connect_type,submit_string)==0) {
+    if (config["submit_string"] == connect_type) {
         int runid;
         char vname[100];
         sscanf(buffer,"%s%d%s",connect_type,&runid,vname);
@@ -524,7 +515,7 @@ void * function (void * arg)
         pthread_mutex_unlock(&mutex_link);
         queuesize++;
     }
-    else if (strcmp(connect_type,pretest_string)==0) {
+    else if (config["pretest_string"] == connect_type) {
         int runid;
         char vname[100];
         sscanf(buffer,"%s%d%s",connect_type,&runid,vname);
@@ -544,7 +535,7 @@ void * function (void * arg)
         pthread_mutex_unlock(&mutex_link);
         queuesize++;
     }
-    else if (strcmp(connect_type,error_string)==0) {
+    else if (config["error_rejudge_string"] == connect_type) {
         int runid;
         char vname[100];
         sscanf(buffer,"%s%d%s",connect_type,&runid,vname);
@@ -564,7 +555,7 @@ void * function (void * arg)
         pthread_mutex_unlock(&mutex_link);
         queuesize++;
     }
-    else if (strcmp(connect_type,challenge_string)==0) {
+    else if (config["challenge_string"] == connect_type) {
         int cha_id;
         char vname[100];
         sscanf(buffer,"%s%d%s",connect_type,&cha_id,vname);
@@ -584,7 +575,7 @@ void * function (void * arg)
         pthread_mutex_unlock(&mutex_link);
         queuesize++;
     }
-    else if (strcmp(connect_type,judger_string)==0) {
+    else if (config["judge_connect_string"] == connect_type) {
         char templog[200]={0};
         char vname[100];
         sscanf(buffer,"%s%s",connect_type,vname);
@@ -596,7 +587,7 @@ void * function (void * arg)
         writelog("Judger Finished\n");
         jvname[tnum]="";
     }
-    else if (strcmp(connect_type,rejudge_string)==0) {
+    else if (config["rejudge_string"] == connect_type) {
         int repid,recid;
         sscanf(buffer,"%s%d%d",connect_type,&repid,&recid);
         MYSQL_RES *res;
@@ -604,7 +595,7 @@ void * function (void * arg)
         MYSQL * mysql;
         mysql=(MYSQL *)malloc(sizeof(MYSQL));
         mysql_init(mysql);
-        if (!mysql_real_connect(mysql,NULL,db_user,db_pass,db_table,MYSQL_PORT,NULL,0)) {
+        if (!mysql_real_connect(mysql, NULL, config["database_user"].c_str(), config["database_password"].c_str(), config["database_table"].c_str(), MYSQL_PORT, NULL, 0)) {
             perror("cannot connect mysql!\n");
             exit(1);
         }
@@ -638,7 +629,7 @@ void * function (void * arg)
         mysql_close(mysql);
         free(mysql);
     }
-    else if (strcmp(connect_type,testall_string)==0) {
+    else if (config["test_all_string"] == connect_type) {
         int recid;
         sscanf(buffer,"%s%d",connect_type,&recid);
         MYSQL_RES *res;
@@ -646,7 +637,7 @@ void * function (void * arg)
         MYSQL * mysql;
         mysql=(MYSQL *)malloc(sizeof(MYSQL));
         mysql_init(mysql);
-        if (!mysql_real_connect(mysql,NULL,db_user,db_pass,db_table,MYSQL_PORT,NULL,0)) {
+        if (!mysql_real_connect(mysql, NULL, config["database_user"].c_str(), config["database_password"].c_str(), config["database_table"].c_str(), MYSQL_PORT, NULL, 0)) {
             perror("cannot connect mysql!\n");
             exit(1);
         }
@@ -734,23 +725,27 @@ void * fetcher(void * arg)
     }
 }
 
-int main(int argc, char * argv[])
+// read configuration file
+void load_config()
 {
-    init();
-    pthread_t tid;
-    ARG *arg;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-    MYSQL * mysql;
-    int sockfd, client_fd;
+    
+    FILE * fin = fopen("config.ini","r");
+    char ts1[1000], ts2[1000];
+    while (fscanf(fin,"%s = %s", ts1, ts2) != EOF) {
+        config[ts1] = ts2;
+    }
+    fclose(fin);
+}
+
+void init_network(int &sockfd) {
     struct sockaddr_in my_addr;
-    struct sockaddr_in remote_addr;
+
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket() error\n");
         exit(1);
     }
     my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(server_port);
+    my_addr.sin_port = htons(atoi(config["port_listen"].c_str()));
     my_addr.sin_addr.s_addr = INADDR_ANY;
     bzero(&(my_addr.sin_zero),8);
     if (bind(sockfd, (struct sockaddr *) & my_addr, sizeof (struct sockaddr)) == -1) {
@@ -761,10 +756,23 @@ int main(int argc, char * argv[])
         perror("listen() error\n");
         exit(1);
     }
-    socklen_t sin_size = sizeof (struct sockaddr_in);
+    
+}
+
+int main(int argc, char * argv[]) {
+	int sockfd;
+    load_config();
+    init_network(sockfd);
+
+    pthread_t tid;
+    ARG *arg;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    MYSQL * mysql;
+    
     mysql=(MYSQL *)malloc(sizeof(MYSQL));
     mysql_init(mysql);
-    if (!mysql_real_connect(mysql,NULL,db_user,db_pass,db_table,MYSQL_PORT,NULL,0)) {
+    if (!mysql_real_connect(mysql, NULL, config["database_user"].c_str(), config["database_password"].c_str(), config["database_table"].c_str(), MYSQL_PORT, NULL, 0)) {
         perror("cannot connect mysql!\n");
         exit(1);
     }
@@ -799,6 +807,9 @@ int main(int argc, char * argv[])
     mysql_close(mysql);
     free(mysql);
     pthread_create(&tid,NULL,fetcher,NULL);
+    socklen_t sin_size = sizeof (struct sockaddr_in);
+	int client_fd;
+	struct sockaddr_in remote_addr;
     while (1)
     {
         if ((client_fd = accept(sockfd, (struct sockaddr *) & remote_addr, &sin_size)) == -1) {
@@ -813,7 +824,7 @@ int main(int argc, char * argv[])
         for (temp_num=0;temp_num<MAX_JUDGER_NUMBER;temp_num++) if (!used[temp_num]) break;
         arg->num=temp_num;
         used[temp_num]=true;
-        pthread_create(&tid,NULL,function,(void *)arg);
+        pthread_create(&tid,NULL,thread_function,(void *)arg);
     }
     close(sockfd);
     exit(0);
