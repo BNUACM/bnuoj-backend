@@ -14,8 +14,15 @@ class SocketHandler {
 public:
     SocketHandler(int _sockfd) : sockfd(_sockfd) {}
     string getConnectionMessage();
+    void sendMessage(string);
+    void sendFile(string);
+    void sendFileWithoutLength(string);
+    void receiveFile(string);
+    void receiveFileWithoutLength(string);
     virtual ~SocketHandler();
 private:
+    void sendMessage(const char *, size_t);
+    size_t receiveMessage(char *, size_t);
     int sockfd;
 };
 

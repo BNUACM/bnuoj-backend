@@ -25,7 +25,7 @@ void init_network() {
     my_addr.sin_family = AF_INET;
     my_addr.sin_port = htons(CONFIG->Getport_listen());
     my_addr.sin_addr.s_addr = INADDR_ANY;
-    bzero(&(my_addr.sin_zero),8);
+    bzero(&(my_addr.sin_zero), 8);
     
     if (bind(main_sockfd, (struct sockaddr *) & my_addr, sizeof (struct sockaddr)) == -1) {
         perror("bind() error\n");

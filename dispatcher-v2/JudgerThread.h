@@ -12,6 +12,7 @@
 #include "SocketHandler.h"
 #include "DatabaseHandler.h"
 #include "Submit.h"
+#include "Bott.h"
 
 class JudgerThread {
 public:
@@ -40,6 +41,8 @@ private:
     SocketHandler * socket;
     string oj;
     Submit * current_submit;
+    
+    void prepareBottForRun(Bott *, string);
 };
 
 #endif	/* JUDGERTHREAD_H */

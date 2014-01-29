@@ -11,6 +11,7 @@
 #include <sys/fcntl.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/time.h>

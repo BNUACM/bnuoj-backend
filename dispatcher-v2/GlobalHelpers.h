@@ -15,12 +15,14 @@
 #include <vector>
 #include <istream>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
 #include "Config.h"
 #include "Logger.h"
 
+string loadAllFromFile(string);
 string intToString(int);
 int stringToInt(string);
 const string currentDateTime();

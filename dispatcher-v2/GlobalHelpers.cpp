@@ -84,3 +84,29 @@ vector<string> split(const string &str, char delim, bool removeAppendedNull) {
 vector<string> split(const string &str, char delim) {
     return split(str, delim, true);
 }
+
+
+/**
+ * Load the whole text file content to a string
+ * @param filename      File to load
+ * @return File content
+ */
+string loadAllFromFile(string filename) {
+    int tried = 0;
+    string res = "", tmps;
+    fstream fin(filename.c_str(), fstream::in);
+    
+    while (fin.fail() && tried++ < 10) {
+        fin.open(filename.c_str(), fstream::in);
+        return res;
+    }
+    
+    if (fin.fail()) return res;
+    while (getline(fin,tmps)) {
+        if (res != "") res += "\n";
+        res += tmps;
+        if (fin.eof()) break;
+    }
+    fin.close();
+    return res;
+}
