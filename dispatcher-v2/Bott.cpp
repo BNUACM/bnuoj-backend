@@ -95,6 +95,23 @@ void Bott::toFile() {
         fprintf(fp, "<special> %s\n", spj.c_str());
         fprintf(fp, "<vname> %s\n", vname.c_str());
         fprintf(fp, "<vid> %s\n", vid.c_str());
+    } else if (type == DO_CHALLENGE) {
+        fprintf(fp, "<type> %d\n", type);
+        fprintf(fp, "%s\n", SOURCE_CODE_BEGIN.c_str());
+        fprintf(fp, "%s\n", src.c_str());
+        fprintf(fp, "%s\n", SOURCE_CODE_END.c_str());
+        fprintf(fp, "<cha_id> %s\n", cha_id.c_str());
+        fprintf(fp, "<language> %s\n", language.c_str());
+        fprintf(fp, "<pid> %s\n", pid.c_str());
+        fprintf(fp, "<data_type> %s\n", data_type.c_str());
+        fprintf(fp, "<data_lang> %s\n", data_lang.c_str());
+        fprintf(fp, "%s\n", DATA_DETAIL_BEGIN.c_str());
+        fprintf(fp, "%s\n", data_detail.c_str());
+        fprintf(fp, "%s\n", DATA_DETAIL_END.c_str());
+        fprintf(fp, "<time_limit> %s\n", case_limit.c_str());
+        fprintf(fp, "<case_limit> %s\n", case_limit.c_str());
+        fprintf(fp, "<memory_limit> %s\n", memory_limit.c_str());
+        fprintf(fp, "<special> %s\n", spj.c_str());
     }
     fclose(fp);
 }

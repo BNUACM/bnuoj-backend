@@ -41,6 +41,8 @@ class Config
         void Settestall_string(string val) { testall_string = val; }
         string Getlog_file_prefix() { return log_file_prefix; }
         void Setlog_file_prefix(string val) { log_file_prefix = val; }
+        string Getlocal_identifier() { return local_identifier; }
+        void Setlocal_identifier(string val) { local_identifier = val; }
         int Getport_listen() { return port_listen; }
         void Setport_listen(int val) { port_listen = val; }
         
@@ -60,6 +62,7 @@ class Config
         string pretest_string;
         string testall_string;
         string log_file_prefix;
+        string local_identifier;
         int port_listen;
 
         map <string, string> config;

@@ -43,6 +43,12 @@ private:
     Submit * current_submit;
     
     void prepareBottForRun(Bott *, string);
+    void prepareBottForChallenge(Bott *, string);
+    void updateRunResult(string, string);
+    void updateRunStatus(Bott *);
+    void updateStatistics(string, string);
+    void updateChallengeResult(string, string);
+    void updateChallengeStatus(Bott *);
 };
 
 #endif	/* JUDGERTHREAD_H */

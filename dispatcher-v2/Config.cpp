@@ -33,6 +33,7 @@ Config::Config() {
     pretest_string = config["pretest_string"];
     testall_string = config["test_all_string"];
     log_file_prefix = config["log_file_prefix"];
+    local_identifier = config["local_identifier"];
     port_listen = atoi(config["port_listen"].c_str());
 
     fclose(fin);

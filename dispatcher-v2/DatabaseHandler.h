@@ -16,6 +16,7 @@ public:
     virtual ~DatabaseHandler();
     vector <map<string, string> > Getall_results(string);
     string escape(string);
+    void query(string);
 
 private:
     MYSQL * mysql;

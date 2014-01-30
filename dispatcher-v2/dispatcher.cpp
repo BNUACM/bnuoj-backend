@@ -210,8 +210,8 @@ void * dispatch(void *) {
             bool found = false;
             pthread_mutex_lock(&judgers_mutex);
             for (list<JudgerThread *>::iterator ij = judgers.begin(); ij != judgers.end(); ++ij) {
-                // judger available and it can judge this task
                 if ((* ij)->Getcurrent_submit() == NULL && (* ij)->Getoj() == it->Getoj()) {
+                    // judger available and it can judge this task
                     found = true;
                     switch (it->Gettype()) {
                         case NEED_JUDGE:

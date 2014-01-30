@@ -64,9 +64,18 @@ vector <map<string, string> > DatabaseHandler::Getall_results(string query) {
 }
 
 /**
+ * Do a DB query
+ * @param query SQL query string
+ */
+void DatabaseHandler::query(string query) {
+    mysql_ping(mysql);
+    mysql_query(mysql, query.c_str());
+}
+
+/**
  * Do mysql_real_escape on the string
- * @param str
- * @return 
+ * @param str   Original string
+ * @return Escaped string
  */
 string DatabaseHandler::escape(string str) {
     char * res = new char[str.length() * 2 + 1];
