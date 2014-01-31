@@ -19,8 +19,9 @@
 
 using namespace std;
 
-#include "Config.h"
 #include "Logger.h"
+#include "Config.h"
+#include "Exception.h"
 
 string loadAllFromFile(string);
 string intToString(int);

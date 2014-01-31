@@ -7,36 +7,30 @@ Config * Config::Getinstance() {
 }
 
 Config::Config() {
-    FILE * fin=fopen("config.ini", "r");
-    
-    if (fin == NULL) {
-        perror("config.ini not found, exiting...\n");
+
+
+    try {
+        INI::Parser ini("config.ini");
+        database_ip = ini.top()["database_ip"];
+        database_port = atoi(ini.top()["database_port"].c_str());
+        database_user = ini.top()["database_user"];
+        database_password = ini.top()["database_password"];
+        database_table = ini.top()["database_table"];
+        judger_string = ini.top()["judge_connect_string"];
+        submit_string = ini.top()["submit_string"];
+        rejudge_string = ini.top()["rejudge_string"];
+        error_rejudge_string = ini.top()["error_rejudge_string"];
+        challenge_string = ini.top()["challenge_string"];
+        pretest_string = ini.top()["pretest_string"];
+        testall_string = ini.top()["test_all_string"];
+        log_file_prefix = ini.top()["log_file_prefix"];
+        local_identifier = ini.top()["local_identifier"];
+        port_listen = atoi(ini.top()["port_listen"].c_str());
+    } catch (runtime_error & e) {
+        cerr << e.what();
         exit(1);
     }
 
-    char ts1[1000],ts2[1000];
-    config.clear();
-    while (fscanf(fin,"%s = %s",ts1,ts2)!=EOF) {
-        config[ts1]=ts2;
-    }
-    
-    database_ip = config["database_ip"];
-    database_port = atoi(config["database_port"].c_str());
-    database_user = config["database_user"];
-    database_password = config["database_password"];
-    database_table = config["database_table"];
-    judger_string = config["judge_connect_string"];
-    submit_string = config["submit_string"];
-    rejudge_string = config["rejudge_string"];
-    error_rejudge_string = config["error_rejudge_string"];
-    challenge_string = config["challenge_string"];
-    pretest_string = config["pretest_string"];
-    testall_string = config["test_all_string"];
-    log_file_prefix = config["log_file_prefix"];
-    local_identifier = config["local_identifier"];
-    port_listen = atoi(config["port_listen"].c_str());
-
-    fclose(fin);
     //ctor
 }
 

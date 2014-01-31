@@ -98,10 +98,12 @@ string loadAllFromFile(string filename) {
     
     while (fin.fail() && tried++ < 10) {
         fin.open(filename.c_str(), fstream::in);
-        return res;
     }
     
-    if (fin.fail()) return res;
+    if (fin.fail()) {
+        throw Exception("File not found");
+    }
+    
     while (getline(fin,tmps)) {
         if (res != "") res += "\n";
         res += tmps;

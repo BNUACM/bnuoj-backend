@@ -10,6 +10,12 @@
 
 using namespace std;
 
+#include "Exception.h"
+#include "ini.hpp"
+
+// this function is in GlobalHelpers.h
+extern string loadAllFromFile(string);
+
 class Config
 {
     public:
@@ -64,8 +70,6 @@ class Config
         string log_file_prefix;
         string local_identifier;
         int port_listen;
-
-        map <string, string> config;
         
         static Config * instance;
 };
