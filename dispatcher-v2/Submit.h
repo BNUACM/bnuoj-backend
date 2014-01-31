@@ -16,7 +16,7 @@ public:
      * Create a submit
      * @param _type     Type of submit
      * @param _id       RunID/ChallengeID according to type
-     * @param _oj    Indicate which judger should be used
+     * @param _oj       Indicate which judger should be used
      */
     Submit(int _type, string _id, string _oj) : type(_type), id(_id), oj(_oj) {}
     virtual ~Submit();

@@ -168,7 +168,7 @@ void SocketHandler::receiveFileWithoutLength(string filename) {
     while (!got_things) {
         buffer[0] = 0; // clear first char, for sanity check
         // use non-blocking method since we don't know the file size
-        while ( (got = recv(sockfd, buffer, MAX_DATA_SIZE, MSG_DONTWAIT)) > 0 ) {
+        while ( (got = recv(sockfd, buffer, 1024, MSG_DONTWAIT)) > 0 ) {
             got_things = true;
             fwrite(buffer, sizeof(char), got, fp);
         }

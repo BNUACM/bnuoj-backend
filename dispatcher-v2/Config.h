@@ -45,8 +45,6 @@ class Config
         void Setpretest_string(string val) { pretest_string = val; }
         string Gettestall_string() { return testall_string; }
         void Settestall_string(string val) { testall_string = val; }
-        string Getlog_file_prefix() { return log_file_prefix; }
-        void Setlog_file_prefix(string val) { log_file_prefix = val; }
         string Getlocal_identifier() { return local_identifier; }
         void Setlocal_identifier(string val) { local_identifier = val; }
         int Getport_listen() { return port_listen; }

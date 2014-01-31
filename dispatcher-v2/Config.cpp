@@ -7,8 +7,6 @@ Config * Config::Getinstance() {
 }
 
 Config::Config() {
-
-
     try {
         INI::Parser ini("config.ini");
         database_ip = ini.top()["database_ip"];
@@ -23,14 +21,12 @@ Config::Config() {
         challenge_string = ini.top()["challenge_string"];
         pretest_string = ini.top()["pretest_string"];
         testall_string = ini.top()["test_all_string"];
-        log_file_prefix = ini.top()["log_file_prefix"];
         local_identifier = ini.top()["local_identifier"];
         port_listen = atoi(ini.top()["port_listen"].c_str());
     } catch (runtime_error & e) {
         cerr << e.what();
         exit(1);
     }
-
     //ctor
 }
 
