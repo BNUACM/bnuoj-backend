@@ -28,11 +28,11 @@ void init_network() {
     bzero(&(my_addr.sin_zero), 8);
     
     if (bind(main_sockfd, (struct sockaddr *) & my_addr, sizeof (struct sockaddr)) == -1) {
-        perror("bind() error\n");
+        perror("bind() error");
         exit(1);
     }
     if (listen(main_sockfd, 5) == -1) {
-        perror("listen() error\n");
+        perror("listen() error");
         exit(1);
     }
 }

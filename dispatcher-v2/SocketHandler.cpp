@@ -22,14 +22,15 @@ string SocketHandler::getConnectionMessage() {
     gettimeofday(&case_startv,&case_startz);
     
     int time_passed;
+    ssize_t length;
     char buffer[255];
     while (1) {
         usleep(10000);
         gettimeofday(&case_nowv, &case_nowz);
         time_passed = (case_nowv.tv_sec - case_startv.tv_sec) * 1000 + (case_nowv.tv_usec - case_startv.tv_usec) / 1000;
-        if (recv(sockfd, buffer, 255, MSG_DONTWAIT) > 0 || time_passed > HANDSHAKE_TIMEOUT) break;
+        if ( (length = recv(sockfd, buffer, 255, MSG_DONTWAIT)) > 0 || time_passed > HANDSHAKE_TIMEOUT) break;
     }
-    
+    buffer[length] = 0;
     return buffer;
 }
 

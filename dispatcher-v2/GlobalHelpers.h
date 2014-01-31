@@ -30,7 +30,7 @@ const string currentDate();
 vector<string> split(const string &, char, bool);
 vector<string> split(const string &, char);
 #define CONFIG Config::Getinstance()
-#define LOG Logger::Getinstance()->log
+#define LOG(a) Logger::Getinstance()->log(a)
 
 
 #endif	/* GLOBALHELPERS_H */

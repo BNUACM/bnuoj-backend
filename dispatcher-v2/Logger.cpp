@@ -46,7 +46,7 @@ void Logger::log(string msg) {
     }
     
     for (vector <string>::iterator it = messages.begin(); it != messages.end(); ++it) {
-        fprintf(fp, "%s : %s\n", currentDateTime().c_str(), it -> c_str());
+        fprintf(fp, "%s [%llu]: %s\n", currentDateTime().c_str(), (unsigned long long)pthread_self() % 10000, it -> c_str());
     }
     
     fclose(fp);
