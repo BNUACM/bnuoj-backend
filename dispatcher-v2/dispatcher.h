@@ -44,10 +44,10 @@ using namespace std;
 #define DO_TESTALL 6
 
 // from judger to dispatcher, message type
-#define JUDGER_STATUS_REPORT 1
-#define NEED_DATA 2
-#define RESULT_REPORT 3
-#define CHALLENGE_REPORT 4
+#define JUDGER_STATUS_REPORT 1001
+#define NEED_DATA 1002
+#define RESULT_REPORT 1003
+#define CHALLENGE_REPORT 1004
 
 // handshake timout, in ms
 #define HANDSHAKE_TIMEOUT 5000
