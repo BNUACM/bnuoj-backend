@@ -80,5 +80,7 @@ void DatabaseHandler::query(string query) {
 string DatabaseHandler::escape(string str) {
     char * res = new char[str.length() * 2 + 1];
     mysql_real_escape_string(mysql, res, str.c_str(), str.length());
-    return res;
+    str = res;
+    delete [] res;
+    return str;
 }
