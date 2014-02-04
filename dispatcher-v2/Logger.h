@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -34,10 +35,12 @@ class Logger
         void log(char *);
         void log(const char *);
         void log(string);
-        
+        void addIdentifier(pthread_t, string);
+        void eraseIdentifier(pthread_t);
         static const string LOG_DIRECTORY;
     protected:
     private:
+        map <pthread_t, string> identifier;
         string name_prefix;
         static Logger * instance; //!< Member variable "instance"
         static pthread_mutex_t log_mutex;

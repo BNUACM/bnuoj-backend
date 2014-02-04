@@ -45,8 +45,9 @@ void Logger::log(string msg) {
         fp = fopen(filename.c_str(), "a");
     }
     
+    string id = identifier.find(pthread_self()) == identifier.end() ? "Main" : identifier[pthread_self()];
     for (vector <string>::iterator it = messages.begin(); it != messages.end(); ++it) {
-        fprintf(fp, "%s [%llu]: %s\n", currentDateTime().c_str(), (unsigned long long)pthread_self() % 10000, it -> c_str());
+        fprintf(fp, "%s %s[%llu]: %s\n", currentDateTime().c_str(), id.c_str(), (unsigned long long)pthread_self() % 10000, it -> c_str());
     }
     
     fclose(fp);
@@ -54,4 +55,19 @@ void Logger::log(string msg) {
     pthread_mutex_unlock(&log_mutex);
 }
 
+/**
+ * Add thread_id to name conversion
+ * @param pt    Thread_id
+ * @param id    Name
+ */
+void Logger::addIdentifier(pthread_t pt, string id) {
+    identifier[pt] = id;
+}
 
+/**
+ * Erase a thread_id conversion
+ * @param pt    Thread_id
+ */
+void Logger:: eraseIdentifier(pthread_t pt) {
+    identifier.erase(pt);
+}

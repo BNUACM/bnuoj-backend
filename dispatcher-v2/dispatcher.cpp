@@ -72,6 +72,8 @@ struct JudgerArgs {
  */
 void * judger_handler(void * arg) {
     JudgerArgs * judger_info = (JudgerArgs *) arg;
+    
+    LOGGER->addIdentifier(pthread_self(), judger_info->oj);
     JudgerThread * judger = new JudgerThread(judger_info->socket, judger_info->oj);
     delete (JudgerArgs *)arg;
     
@@ -92,6 +94,7 @@ void * judger_handler(void * arg) {
     }
     
     delete judger;
+    LOGGER->eraseIdentifier(pthread_self());
     pthread_exit(NULL);
 }
 
@@ -203,6 +206,7 @@ void start_listener() {
  * @return NULL
  */
 void * dispatch(void *) {
+    LOGGER->addIdentifier(pthread_self(), "Fetcher");
     while (true) {
         usleep(6174); // sleep for a random time
         pthread_mutex_lock(&runs_mutex);

@@ -231,6 +231,10 @@ void JudgerThread::updateStatistics(string runid, string result) {
  */
 void JudgerThread::run() {
     while (true) {
+        if (!socket->checkAlive()) {
+             LOG("Connection lost. OJ: " + oj);
+             return;
+        }
         usleep(50000); // sleep 50ms
         if (current_submit) {
             // got a new judge task

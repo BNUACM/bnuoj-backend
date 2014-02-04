@@ -32,7 +32,7 @@ vector<string> split(const string &, char, bool);
 vector<string> split(const string &, char);
 #define CONFIG Config::Getinstance()
 #define LOG Logger::Getinstance()->log
-
+#define LOGGER Logger::Getinstance()
 
 #endif	/* GLOBALHELPERS_H */
 

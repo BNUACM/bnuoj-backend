@@ -7,8 +7,27 @@
 
 #include "SocketHandler.h"
 
+const int SocketHandler::CHECK_ALIVE_INTERVAL = 10;
+
+SocketHandler::SocketHandler(int _sockfd) : sockfd(_sockfd) {
+    last_check = time(NULL);
+}
+
 SocketHandler::~SocketHandler() {
     close(sockfd);
+}
+
+/**
+ * Check whether the socket is still alive
+ * @return Is alive or not
+ */
+bool SocketHandler::checkAlive() {
+    if (time(NULL) - last_check < CHECK_ALIVE_INTERVAL) return true;
+    char data;
+    ssize_t bytes = recv(sockfd, &data, 1, MSG_PEEK | MSG_DONTWAIT); //read one byte
+    if (bytes == 0) return false;
+    last_check = time(NULL);
+    return true;
 }
 
 /**
