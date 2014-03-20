@@ -184,7 +184,7 @@ void JudgerThread::updateStatistics(string runid, string result) {
     map<string, string> run_info = db->Getall_results("\
         SELECT username, status.pid as pid, vname \
         FROM   status, problem \
-        WHERE  runid = '" + db->escape(runid) + "' AND problem.pid = status.runid \
+        WHERE  runid = '" + db->escape(runid) + "' AND problem.pid = status.pid \
     ")[0];
     
     LOG("Updating statistics, runid: " + runid + ", user: " + run_info["username"] + ", result: " + result + " for " + run_info["pid"] + " from " + run_info["vname"]);
@@ -248,7 +248,8 @@ void JudgerThread::run() {
                 
                 // prepare file for judger
                 filename = Bott::RAW_FILES_DIRECTORY + current_submit->Getid() + Bott::EXTENTION;
-                bott = new Bott(filename);
+                bott = new Bott();
+                bott->Setout_filename(filename);
                 prepareBottForRun(bott, current_submit->Getid());
                 delete bott;
                 
@@ -256,9 +257,11 @@ void JudgerThread::run() {
                 updateRunResult(current_submit->Getid(), "Judging");
                 
                 try {
+                    LOG("Sending to judger...");
                     socket->sendFile(filename);
                     filename = Bott::RESULTS_DIRECTORY + current_submit->Getid() + "res" + Bott::EXTENTION;
                     socket->receiveFile(filename);
+                    LOG("Got result back from judger.");
                 } catch (Exception & e) {
                     LOG("Connection lost, requeue Runid: " + current_submit->Getid());
                     updateRunResult(current_submit->Getid(), "Judge Error & Requeued");

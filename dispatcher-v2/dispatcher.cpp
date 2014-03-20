@@ -5,7 +5,7 @@
 #include "Submit.h"
 
 // Global config
-list<Submit> runs;
+list<Submit *> runs;
 list<JudgerThread *> judgers;
 pthread_mutex_t runs_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t judgers_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -54,7 +54,7 @@ DatabaseHandler * get_db_instance() {
  * Inset a submit into runs list
  * @param submit        A Submit to be inserted
  */
-void insert_run(const Submit & submit) {
+void insert_run(Submit * submit) {
     pthread_mutex_lock(&runs_mutex);
     runs.push_back(submit);
     pthread_mutex_unlock(&runs_mutex);
@@ -75,7 +75,7 @@ void * judger_handler(void * arg) {
     
     LOGGER->addIdentifier(pthread_self(), judger_info->oj);
     JudgerThread * judger = new JudgerThread(judger_info->socket, judger_info->oj);
-    delete (JudgerArgs *)arg;
+    delete judger_info;
     
     pthread_mutex_lock(&judgers_mutex);
     judgers.push_back(judger);
@@ -90,7 +90,7 @@ void * judger_handler(void * arg) {
     // check if there's unfinished submit
     Submit * submit = judger->Getcurrent_submit();
     if (submit) {
-        insert_run(* submit);
+        insert_run(submit);
     }
     
     delete judger;
@@ -106,7 +106,7 @@ void * judger_handler(void * arg) {
 void * connection_handler(void * arg) {
     int * client_fd = (int *) arg;
     SocketHandler * socket = new SocketHandler(* client_fd);
-    delete (int *) arg;
+    delete client_fd;
     
     string message = socket->getConnectionMessage();
     vector <string> details = split(message, '\n');
@@ -126,19 +126,19 @@ void * connection_handler(void * arg) {
     } else if (details[0] == CONFIG->Getsubmit_string()) {
         // format: submit_string\nrunid\nOJ
         LOG("Received a submit, runid: " + details[1] + ", oj: " + details[2]);
-        insert_run(Submit(NEED_JUDGE, details[1], details[2]));
+        insert_run(new Submit(NEED_JUDGE, details[1], details[2]));
     } else if (details[0] == CONFIG->Getpretest_string()) {
         // format: pretest_string\nrunid\nOJ
         LOG("Received a pretest request, runid: " + details[1] + ", oj: " + details[2]);
-        insert_run(Submit(DO_PRETEST, details[1], details[2]));
+        insert_run(new Submit(DO_PRETEST, details[1], details[2]));
     } else if (details[0] == CONFIG->Geterror_rejudge_string()) {
         // format: error_rejudge_string\nrunid\nOJ
         LOG("Received an error rejudge request, runid: " + details[1] + ", oj: " + details[2]);
-        insert_run(Submit(NEED_JUDGE, details[1], details[2]));
+        insert_run(new Submit(NEED_JUDGE, details[1], details[2]));
     } else if (details[0] == CONFIG->Getchallenge_string()) {
         // format: challenge_string\nchallenge_id\nOJ
         LOG("Received a challenge request, runid: " + details[1] + ", oj: " + details[2]);
-        insert_run(Submit(DO_CHALLENGE, details[1], details[2]));
+        insert_run(new Submit(DO_CHALLENGE, details[1], details[2]));
     } else if (details[0] == CONFIG->Getrejudge_string()) {
         // format: rejudge_string\nproblem_id\ncontest_id
         LOG("Received a rejudge request, pid: " + details[1] + ", cid: " + details[2]);
@@ -152,8 +152,9 @@ void * connection_handler(void * arg) {
                    status.pid=problem.pid \
             ORDER BY runid \
         ");
+        delete db;
         for (vector <map<string, string> >::iterator it = result.begin(); it != result.end(); ++it) {
-            insert_run(Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
+            insert_run(new Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
         }
     } else if (details[0] == CONFIG->Gettestall_string()) {
         // format: rejudge_string\ncontest_id
@@ -167,8 +168,9 @@ void * connection_handler(void * arg) {
                    status.pid=problem.pid \
             ORDER BY runid \
         ");
+        delete db;
         for (vector <map<string, string> >::iterator it = result.begin(); it != result.end(); ++it) {
-            insert_run(Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
+            insert_run(new Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
         }
     } else {
         LOG("Illegal connection recieved: " + message);
@@ -208,30 +210,30 @@ void start_listener() {
 void * dispatch(void *) {
     LOGGER->addIdentifier(pthread_self(), "Fetcher");
     while (true) {
-        usleep(6174); // sleep for a random time
+        usleep(61743); // sleep for a random time
         pthread_mutex_lock(&runs_mutex);
-        for (list<Submit>::iterator it = runs.begin(); it != runs.end(); ++it) {
+        for (list<Submit *>::iterator it = runs.begin(); it != runs.end(); ++it) {
             bool found = false;
             pthread_mutex_lock(&judgers_mutex);
             for (list<JudgerThread *>::iterator ij = judgers.begin(); ij != judgers.end(); ++ij) {
-                if ((* ij)->Getcurrent_submit() == NULL && (* ij)->Getoj() == it->Getoj()) {
+                if ((* ij)->Getcurrent_submit() == NULL && (* ij)->Getoj() == (* it)->Getoj()) {
                     // judger available and it can judge this task
                     found = true;
-                    switch (it->Gettype()) {
+                    switch ((* it)->Gettype()) {
                         case NEED_JUDGE:
-                            LOG("Dispatched runid: " + it->Getid() + " for " + it->Getoj() + " to judge");
+                            LOG("Dispatched runid: " + (* it)->Getid() + " for " + (* it)->Getoj() + " to judge");
                             break;
                         case DO_CHALLENGE:
-                            LOG("Dispatched chaid: " + it->Getid() + " for " + it->Getoj() + " to judge");
+                            LOG("Dispatched chaid: " + (* it)->Getid() + " for " + (* it)->Getoj() + " to judge");
                             break;
                         case DO_PRETEST:
-                            LOG("Dispatched runid: " + it->Getid() + " for " + it->Getoj() + " to pretest");
+                            LOG("Dispatched runid: " + (* it)->Getid() + " for " + (* it)->Getoj() + " to pretest");
                             break;
                         case DO_TESTALL:
-                            LOG("Dispatched runid: " + it->Getid() + " for " + it->Getoj() + " to test all");
+                            LOG("Dispatched runid: " + (* it)->Getid() + " for " + (* it)->Getoj() + " to test all");
                             break;
                     }
-                    (* ij)->Setcurrent_submit(&(* it));
+                    (* ij)->Setcurrent_submit(*it);
                     runs.erase(it);
                     break;
                 }
@@ -262,7 +264,7 @@ int main() {
                status.pid=problem.pid ORDER BY runid");
     
     for (vector <map<string, string> >::iterator it = result.begin(); it != result.end(); ++it) {
-        insert_run(Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
+        insert_run(new Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
     }
     result.clear();
     delete db;

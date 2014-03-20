@@ -39,11 +39,8 @@ vector <map<string, string> > DatabaseHandler::Getall_results(string query) {
     MYSQL_RES * res = mysql_use_result(mysql);
     
     // init field names
-    MYSQL_FIELD *field;
-    vector <string> fields;
-    while((field = mysql_fetch_field(res))) {
-        fields.push_back(field->name);
-    }
+    MYSQL_FIELD * fields = mysql_fetch_field(res);
+    int num_fields = mysql_num_fields(res);
     
     // fetch all rows
     MYSQL_ROW row;
@@ -51,8 +48,8 @@ vector <map<string, string> > DatabaseHandler::Getall_results(string query) {
     while ((row = mysql_fetch_row(res))) {
         map<string, string> tmp;
         tmp.clear();
-        for (int i = 0; i < fields.size(); ++i) {
-            tmp[fields[i]] = row[i];
+        for (int i = 0; i < num_fields; ++i) {
+            tmp[fields[i].name] = row[i];
             tmp[intToString(i)] = row[i];
         }
         result.push_back(tmp);

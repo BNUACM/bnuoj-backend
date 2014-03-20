@@ -58,23 +58,23 @@ Bott::Bott(string filename) {
     }
     fin.close();
     if (infos.count("<type>")) type = stringToInt(infos["<type>"]);
-    if (infos.count("<runid>")) runid = infos["<runid>"];
-    if (infos.count("<cha_id>")) cha_id = infos["<cha_id>"];
-    if (infos.count("<language>")) language = infos["<language>"];
-    if (infos.count("<pid>")) pid = infos["<pid>"];
-    if (infos.count("<testcases>")) number_of_testcases = infos["<testcases>"];
-    if (infos.count("<time_limit>")) time_limit = infos["<time_limit>"];
-    if (infos.count("<case_limit>")) case_limit = infos["<case_limit>"];
-    if (infos.count("<memory_limit>")) memory_limit = (infos["<memory_limit>"]);
-    if (infos.count("<special>")) spj = infos["<special>"];
-    if (infos.count("<vname>")) vname = infos["<vname>"];
-    if (infos.count("<vid>")) vid = infos["<vid>"];
-    if (infos.count("<memory_used>")) memory_used = infos["<memory_used>"];
-    if (infos.count("<time_used>")) memory_used = infos["<time_used>"];
-    if (infos.count("<result>")) result = infos["<result>"];
-    if (infos.count("<data_type>")) data_type = infos["<data_type>"];
-    if (infos.count("<data_lang>")) data_lang = infos["<data_lang>"];
-    if (infos.count("<challenge_result>")) cha_result = infos["<challenge_result>"];
+    if (infos.count("<runid>")) runid = trim(infos["<runid>"]);
+    if (infos.count("<cha_id>")) cha_id = trim(infos["<cha_id>"]);
+    if (infos.count("<language>")) language = trim(infos["<language>"]);
+    if (infos.count("<pid>")) pid = trim(infos["<pid>"]);
+    if (infos.count("<testcases>")) number_of_testcases = trim(infos["<testcases>"]);
+    if (infos.count("<time_limit>")) time_limit = trim(infos["<time_limit>"]);
+    if (infos.count("<case_limit>")) case_limit = trim(infos["<case_limit>"]);
+    if (infos.count("<memory_limit>")) memory_limit = trim(infos["<memory_limit>"]);
+    if (infos.count("<special>")) spj = trim(infos["<special>"]);
+    if (infos.count("<vname>")) vname = trim(infos["<vname>"]);
+    if (infos.count("<vid>")) vid = trim(infos["<vid>"]);
+    if (infos.count("<memory_used>")) memory_used = trim(infos["<memory_used>"]);
+    if (infos.count("<time_used>")) time_used = trim(infos["<time_used>"]);
+    if (infos.count("<result>")) result = trim(infos["<result>"]);
+    if (infos.count("<data_type>")) data_type = trim(infos["<data_type>"]);
+    if (infos.count("<data_lang>")) data_lang = trim(infos["<data_lang>"]);
+    if (infos.count("<challenge_result>")) cha_result = trim(infos["<challenge_result>"]);
 }
 
 void Bott::toFile() {

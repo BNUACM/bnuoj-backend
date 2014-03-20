@@ -26,6 +26,7 @@ using namespace std;
 string loadAllFromFile(string);
 string intToString(int);
 int stringToInt(string);
+string trim(string);
 const string currentDateTime();
 const string currentDate();
 vector<string> split(const string &, char, bool);

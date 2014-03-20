@@ -21,6 +21,17 @@ int stringToInt(string str) {
     return atoi(str.c_str());
 }
 
+/**
+ * Trim leading and trailing spaces
+ * @param str   Original string
+ * @return Trimmed string
+ */
+string trim(string str) {
+    string spaces = " \t\n\r";
+    size_t start = str.find_first_not_of(spaces);
+    size_t end = str.find_last_not_of(spaces);
+    return str.substr(start, end - start + 1);
+}
 
 /**
  * Get current date/time, format is YYYY-MM-DD HH:mm:ss
