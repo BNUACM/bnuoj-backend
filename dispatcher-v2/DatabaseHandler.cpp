@@ -56,7 +56,7 @@ vector <map<string, string> > DatabaseHandler::Getall_results(string query) {
     }
     
     mysql_free_result(res);
-    
+
     return result;
 }
 

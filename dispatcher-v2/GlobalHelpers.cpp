@@ -83,6 +83,9 @@ vector<string> split(const string &str, char delim, bool removeAppendedNull) {
             elems.pop_back();
         }
     }
+    if (elems.empty()) {
+        elems.push_back(str);
+    }
     return elems;
 }
 

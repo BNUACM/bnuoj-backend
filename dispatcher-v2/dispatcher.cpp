@@ -118,6 +118,7 @@ void * connection_handler(void * arg) {
             pthread_t thread_id;
             JudgerArgs * arg = new JudgerArgs(socket, details[1]);
             pthread_create(&thread_id, NULL, judger_handler, (void *)arg);
+            pthread_detach(thread_id);
         } else {
             LOG("Too many judgers, refuse to setup new handler.");
             // because it won't be deleted afterwards
@@ -177,7 +178,9 @@ void * connection_handler(void * arg) {
     }
     
     // judger will reuse the socket
-    if (details[0] != CONFIG->Getjudger_string()) delete socket;
+    if (details[0] != CONFIG->Getjudger_string()) {
+        delete socket;
+    }
     
     pthread_exit(NULL);
 }
@@ -199,6 +202,7 @@ void start_listener() {
         int * arg = new int;
         *arg = client_fd;
         pthread_create(&thread_id, NULL, connection_handler, (void *)arg);
+        pthread_detach(thread_id);
     }
 }
 
@@ -250,9 +254,6 @@ int main() {
 
     init_network();
     runs.clear();
-
-    //turn off this to boost io performance
-    ios::sync_with_stdio(false);
     
     // get runs that currently needed to be judged
     DatabaseHandler * db = get_db_instance();
@@ -272,6 +273,7 @@ int main() {
     pthread_t tid;
     // start dispatch thread
     pthread_create(&tid, NULL, dispatch, NULL);
+    pthread_detach(tid);
     // start event loop
     start_listener();
     

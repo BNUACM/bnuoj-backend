@@ -45,9 +45,9 @@ void Logger::log(string msg) {
         fp = fopen(filename.c_str(), "a");
     }
     
-    string id = identifier.find(pthread_self()) == identifier.end() ? "Main" : identifier[pthread_self()];
+    string id = identifier.find(getpid()) == identifier.end() ? "Main" : identifier[getpid()];
     for (vector <string>::iterator it = messages.begin(); it != messages.end(); ++it) {
-        fprintf(fp, "%s %s[%llu]: %s\n", currentDateTime().c_str(), id.c_str(), (unsigned long long)pthread_self() % 10000, it -> c_str());
+        fprintf(fp, "%s %s[%d]: %s\n", currentDateTime().c_str(), id.c_str(), getpid(), it -> c_str());
     }
     
     fclose(fp);
@@ -56,18 +56,18 @@ void Logger::log(string msg) {
 }
 
 /**
- * Add thread_id to name conversion
- * @param pt    Thread_id
+ * Add process ID to name conversion
+ * @param pt    Process ID
  * @param id    Name
  */
-void Logger::addIdentifier(pthread_t pt, string id) {
+void Logger::addIdentifier(int pt, string id) {
     identifier[pt] = id;
 }
 
 /**
- * Erase a thread_id conversion
- * @param pt    Thread_id
+ * Erase a process ID conversion
+ * @param pt    Process ID
  */
-void Logger::eraseIdentifier(pthread_t pt) {
+void Logger::eraseIdentifier(int pt) {
     identifier.erase(pt);
 }
