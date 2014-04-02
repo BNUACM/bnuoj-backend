@@ -10,6 +10,8 @@
 DatabaseHandler::DatabaseHandler() {
     mysql = new MYSQL;
     mysql_init(mysql);
+    bool reconnect_flag = true;
+    mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect_flag);
     mysql_options(mysql, MYSQL_SET_CHARSET_NAME, "utf8");
     if (!mysql_real_connect(mysql,
             CONFIG->Getdatabase_ip().c_str(),

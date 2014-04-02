@@ -23,7 +23,8 @@ JudgerThread::JudgerThread(SocketHandler * _socket, string _oj) {
 JudgerThread::~JudgerThread() {
     delete db;
     delete socket;
-    if (current_submit) delete current_submit;
+    // Don't delete it, since it will be requeued
+    // if (current_submit) delete current_submit;
 }
 
 /**
@@ -187,7 +188,7 @@ void JudgerThread::updateStatistics(string runid, string result) {
         WHERE  runid = '" + db->escape(runid) + "' AND problem.pid = status.pid \
     ")[0];
     
-    LOG("Updating statistics, runid: " + runid + ", user: " + run_info["username"] + ", result: " + result + " for " + run_info["pid"] + " from " + run_info["vname"]);
+    LOG("Updating statistics, runid: " + runid + ", user: " + run_info["username"] + ", result: " + result + ", pid: " + run_info["pid"]);
     
     if (result.find("Accept") != string::npos) {
         map<string, string> info = db->Getall_results("\
