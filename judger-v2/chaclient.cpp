@@ -387,8 +387,10 @@ int main(int argc, char *argv[]) {
             }
             sock->receiveFile(CONFIG->GetTmpfile_path() + "temp.bott");
         } catch (Exception & e) {
-            delete sock;
-            sock = NULL;
+            if (sock) {
+                delete sock;
+                sock = NULL;
+            }
             LOG((string)"Exception caught: " + e.what());
             LOG("Network Error, trying to reconnect after 5 seconds");
             sleep(5);
