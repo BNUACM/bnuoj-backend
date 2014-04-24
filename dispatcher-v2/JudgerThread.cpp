@@ -40,6 +40,7 @@ void JudgerThread::prepareBottForRun(Bott * bott, string runid) {
                    status.language AS language, \
                    status.pid AS pid, \
                    problem.ignore_noc AS ignore_noc \
+                   problem.is_interactive AS is_interactive \
             FROM status, problem \
             WHERE status.pid = problem.pid AND runid = '" + runid + "' \
     ")[0];
@@ -56,6 +57,10 @@ void JudgerThread::prepareBottForRun(Bott * bott, string runid) {
         bott->Settype(DO_TESTALL);
     } else {
         bott->Settype(NEED_JUDGE);
+    }
+    
+    if (info["is_interactive"] == "1") {
+        bott->Settype(DO_INTERACTIVE);
     }
     
     // load additional info from problem table
