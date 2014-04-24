@@ -135,6 +135,15 @@ public:
         this->vmlang_multiplier = vmlang_multiplier;
     }
 
+    int GetInteractive_max_run_time() const {
+        return interactive_max_run_time;
+    }
+
+    void SetInteractive_max_run_time(int interactive_max_run_time) {
+        this->interactive_max_run_time = interactive_max_run_time;
+    }
+
+
 
 
 protected:
@@ -151,6 +160,7 @@ private:
     int extra_runtime;
     int checker_run_time;
     int checker_run_memory;
+    int interactive_max_run_time;
     string judge_connect_string;
     string tmpfile_path;
 

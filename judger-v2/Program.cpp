@@ -14,6 +14,8 @@ Program::Program()
     result="";
     base_filename="";
     time_used=memory_used=0;
+    compile_time_limit=GENERAL_COMPILE_TIME;
+    if (vmlang[language]) compile_time_limit=GENERAL_COMPILE_TIME*3;
     check_exit_status=false;
     if (!para_inited) {
         init_error();
@@ -93,7 +95,7 @@ string Program::Inttostring(int x) {
     return t;
 }
 
-int Program::Compile() {
+int Program::Compile(string source, int language) {
     cinfo_filename = CONFIG->GetTmpfile_path() + tmpnam()+".txt";
     if (language!=JAVALANG) base_filename = CONFIG->GetTmpfile_path() + tmpnam();
     else base_filename = CONFIG->GetTmpfile_path() + "Main";
@@ -512,41 +514,51 @@ int Program::Excution() {
     return 0;
 }
 
-void Program::Run()
-{
-    if (!compiled) {
-        compile_time_limit=GENERAL_COMPILE_TIME;
-        if (vmlang[language]) compile_time_limit=GENERAL_COMPILE_TIME*3;
-        int res=Compile();
-        compiled=true;
-        if (res==-1) {
-            //JUDGE ERROR
-            result="Invalid Language";
-            return;
-        }
-        else if (res==2) {
-            //COMPILE ERROR
+void Program::Trytocompile(string source, int language) {
+    if (source == "") {
+        source = this->source;
+    }
+    if (language == -1) {
+        language = this->language;
+    }
+    int res=Compile(source, language);
+    compiled=true;
+    if (res==-1) {
+        //JUDGE ERROR
+        result="Invalid Language";
+        return;
+    }
+    else if (res==2) {
+        //COMPILE ERROR
+        result="Compile Error";
+        return;
+    }
+    int cnt=0;
+    while (res==1) {
+        cnt++;
+        ce_info=Loadallfromfile(cinfo_filename,200);
+        if (ce_info.length()>0||cnt>2) {
             result="Compile Error";
             return;
         }
-        int cnt=0;
-        while (res==1) {
-            cnt++;
-            ce_info=Loadallfromfile(cinfo_filename,200);
-            if (ce_info.length()>0||cnt>2) {
-                result="Compile Error";
-                return;
-            }
-            else {
-                usleep(50000);
-                res=Compile();
-            }
+        else {
+            usleep(50000);
+            res=Compile(source, language);
         }
-        if (vmlang[language]) {
-            total_time_limit*=VMLANG_MULTIPLIER;
-            case_time_limit*=VMLANG_MULTIPLIER;
-            memory_limit*=VMLANG_MULTIPLIER;
-        }
+    }
+    if (vmlang[language]) {
+        total_time_limit*=VMLANG_MULTIPLIER;
+        case_time_limit*=VMLANG_MULTIPLIER;
+        memory_limit*=VMLANG_MULTIPLIER;
+    }
+}
+
+void Program::Run()
+{
+    if (!compiled) {
+        result = "";
+        Trytocompile(source, language);
+        if (result != "") return;
     }
     if (exc_filename!=src_filename) {
         string tmps=CONFIG->GetTmpfile_path() + tmpnam();

@@ -22,6 +22,8 @@ PConfig::PConfig(int pid)
         data_checker_language = atoi(ini.top()["data_checker_language"].c_str());
         solution_filename = basedir + ini.top()["solution_filename"];
         solution_language = atoi(ini.top()["solution_language"].c_str());
+        validator_filename = basedir + ini.top()["validator_filename"];
+        validator_language = atoi(ini.top()["validator_language"].c_str());
         error = false;
     } catch (runtime_error & e) {
         error = true;

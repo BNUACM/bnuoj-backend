@@ -20,12 +20,31 @@ class PConfig
         void Setsolution_language(int val) { solution_language = val; }
         bool Geterror() { return error; }
         void Seterror(bool val) { error = val; }
+
+        string Getvalidator_filename() const {
+            return validator_filename;
+        }
+
+        void Setvalidator_filename(string validator_filename) {
+            this->validator_filename = validator_filename;
+        }
+
+        int Getvalidator_language() const {
+            return validator_language;
+        }
+
+        void Setvalidator_language(int validator_language) {
+            this->validator_language = validator_language;
+        }
+
     protected:
     private:
         string data_checker_filename;
         string solution_filename;
+        string validator_filename;
         int data_checker_language;
         int solution_language;
+        int validator_language;
         string basedir;
         map <string,string> config;
         bool error;

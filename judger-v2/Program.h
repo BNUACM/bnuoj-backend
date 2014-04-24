@@ -46,35 +46,56 @@ class Program
         void Setcheck_exit_status(bool val) { check_exit_status = val; }
         string Loadallfromfile(string filename,int limit=-1);
         void Run();
-        int Compile();
+        int Compile(string, int);
+        void Trytocompile(string, int);
         void Savetofile(string filename,string content);
         bool Checkfile(string);
         string Inttostring(int);
+
+        string Getbase_filename() const {
+            return base_filename;
+        }
+
+        void Setbase_filename(string base_filename) {
+            this->base_filename = base_filename;
+        }
+
+        string Geterr_filename() const {
+            return err_filename;
+        }
+
+        void Seterr_filename(string err_filename) {
+            this->err_filename = err_filename;
+        }
+
+
     protected:
-    private:
-        int Excution();
         void Deletefile(string);
-        string base_filename;
-        string src_filename;
-        string exc_filename;
-        string in_filename;
-        string out_filename;
-        string err_filename;
-        string res_filename;
-        bool compiled;
-        string cinfo_filename;
-        string ce_info;
         int total_time_limit;
         int case_time_limit;
         int memory_limit;
         int time_used;
         int memory_used;
-        int language;
-        string source;
+        string exc_filename;
         string result;
+        string res_filename;
+        bool check_exit_status;
+        string source;
+        int language;
+        string src_filename;
+    private:
+        int Excution();
+        string base_filename;
+        string in_filename;
+        string out_filename;
+        string err_filename;
+        bool compiled;
+        string cinfo_filename;
+        string ce_info;
+        
         int compile_time_limit;
         bool has_input;
-        bool check_exit_status;
+        
         static bool para_inited;
 };
 

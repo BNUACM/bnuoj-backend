@@ -6,6 +6,7 @@
 #include "PConfig.h"
 #include "ini.hpp"
 #include "SocketHandler.h"
+#include "Interactive.h"
 
 map <string,string> config;
 
@@ -377,6 +378,35 @@ void dojudge(int type) {
     send_result(retbott.Getout_filename());
 }
 
+void dointeractive() {
+    LOG("Runid: "+Inttostring(bott->Getrunid())+" Type: Interactive");
+    
+    retbott.Settype(RESULT_REPORT);
+    retbott.Setrunid(bott->Getrunid());
+    Interactive * usrprogram=new Interactive;
+    usrprogram->Setlanguage(bott->Getlanguage());
+    usrprogram->Setsource(bott->Getsrc());
+    problem=new PConfig(bott->Getpid());
+    usrprogram->SetValidator_source(Loadallfromfile(problem->Getvalidator_filename()));
+    usrprogram->SetValidator_language(problem->Getvalidator_language());
+    
+    usrprogram->Setcase_time_limit(bott->Getcase_limit());
+    usrprogram->Settotal_time_limit(bott->Gettime_limit());
+    usrprogram->Setmemory_limit(bott->Getmemory_limit());
+    
+    usrprogram->Run();
+    retbott.Setce_info(usrprogram->Getce_info());
+    retbott.Settime_used(usrprogram->Gettime_used());
+    retbott.Setmemory_used(usrprogram->Getmemory_used());
+    retbott.Setresult(usrprogram->Getresult());
+    
+    retbott.Setout_filename("results/"+Inttostring(retbott.Getrunid()));
+    retbott.toFile();
+    delete usrprogram;
+    delete problem;
+    send_result(retbott.Getout_filename());
+}
+
 int main(int argc, char *argv[]) {
     init();
     //init_error();
@@ -400,6 +430,7 @@ int main(int argc, char *argv[]) {
         parse_bott();
         if (bott->Gettype()==DO_CHALLENGE) dochallenge();
         else if (bott->Gettype()==NEED_JUDGE||bott->Gettype()==DO_TESTALL||bott->Gettype()==DO_PRETEST) dojudge(bott->Gettype());
+        else if (bott->Gettype()==DO_INTERACTIVE) dointeractive();
         delete bott;
     }
     return 0;

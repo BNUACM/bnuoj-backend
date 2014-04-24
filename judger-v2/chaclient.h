@@ -48,6 +48,7 @@ using namespace std;
 #define DO_CHALLENGE 4
 #define DO_PRETEST 5
 #define DO_TESTALL 6
+#define DO_INTERACTIVE 7
 #define JUDGER_STATUS_REPORT 1
 #define NEED_DATA 2
 #define RESULT_REPORT 3
