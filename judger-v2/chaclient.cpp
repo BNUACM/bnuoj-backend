@@ -118,7 +118,7 @@ int set_data(string filename) {
 }
 
 int check_data(int pid,string in_filename,string result_filename) {
-    problem=new PConfig(pid);
+    problem=new PConfig(pid, "challenge");
     if (problem->Geterror()) {
         LOG("No Data Checker!");
         delete problem;
@@ -386,13 +386,14 @@ void dointeractive() {
     Interactive * usrprogram=new Interactive;
     usrprogram->Setlanguage(bott->Getlanguage());
     usrprogram->Setsource(bott->Getsrc());
-    problem=new PConfig(bott->Getpid());
+    problem=new PConfig(bott->Getpid(), "interactive");
     usrprogram->SetValidator_source(Loadallfromfile(problem->Getvalidator_filename()));
     usrprogram->SetValidator_language(problem->Getvalidator_language());
     
     usrprogram->Setcase_time_limit(bott->Getcase_limit());
     usrprogram->Settotal_time_limit(bott->Gettime_limit());
     usrprogram->Setmemory_limit(bott->Getmemory_limit());
+    usrprogram->Setout_filename(CONFIG->GetTmpfile_path() + tmpnam());
     
     usrprogram->Run();
     retbott.Setce_info(usrprogram->Getce_info());

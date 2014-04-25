@@ -8,7 +8,7 @@ class PConfig
 {
     public:
         PConfig();
-        PConfig(int);
+        PConfig(int, string);
         virtual ~PConfig();
         string Getdata_checker_filename() { return data_checker_filename; }
         void Setdata_checker_filename(string val) { data_checker_filename = val; }

@@ -15,7 +15,6 @@ Program::Program()
     base_filename="";
     time_used=memory_used=0;
     compile_time_limit=GENERAL_COMPILE_TIME;
-    if (vmlang[language]) compile_time_limit=GENERAL_COMPILE_TIME*3;
     check_exit_status=false;
     if (!para_inited) {
         init_error();
@@ -515,6 +514,7 @@ int Program::Excution() {
 }
 
 void Program::Trytocompile(string source, int language) {
+    if (vmlang[language]) compile_time_limit=GENERAL_COMPILE_TIME*3;
     if (source == "") {
         source = this->source;
     }

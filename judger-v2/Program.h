@@ -79,6 +79,8 @@ class Program
         string exc_filename;
         string result;
         string res_filename;
+        string out_filename;
+        string cinfo_filename;
         bool check_exit_status;
         string source;
         int language;
@@ -87,10 +89,8 @@ class Program
         int Excution();
         string base_filename;
         string in_filename;
-        string out_filename;
         string err_filename;
         bool compiled;
-        string cinfo_filename;
         string ce_info;
         
         int compile_time_limit;

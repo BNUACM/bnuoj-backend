@@ -12,9 +12,9 @@ string PConfig::Inttostring(int x) {
     return t;
 }
 
-PConfig::PConfig(int pid)
+PConfig::PConfig(int pid, string prefix)
 {
-    basedir = (string)"testdata/" + Inttostring(pid) + "/challenge/";
+    basedir = (string)"testdata/" + Inttostring(pid) + "/" + prefix + "/";
     
     try {
         INI::Parser ini((basedir + "config.ini").c_str());

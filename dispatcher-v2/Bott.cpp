@@ -80,7 +80,7 @@ Bott::Bott(string filename) {
 void Bott::toFile() {
     
     FILE *fp = fopen(out_filename.c_str(), "w");
-    if (type == NEED_JUDGE || type == DO_PRETEST || type == DO_TESTALL) {
+    if (type == NEED_JUDGE || type == DO_PRETEST || type == DO_TESTALL || type == DO_INTERACTIVE) {
         fprintf(fp, "<type> %d\n", type);
         fprintf(fp, "%s\n", SOURCE_CODE_BEGIN.c_str());
         fprintf(fp, "%s\n", src.c_str());

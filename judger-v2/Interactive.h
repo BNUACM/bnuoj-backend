@@ -75,6 +75,7 @@ private:
     string validator_out_filename;
     string validator_err_filename;
     string validator_res_filename;
+    string validator_cinfo_filename;
     
     bool validator_compiled;
     
