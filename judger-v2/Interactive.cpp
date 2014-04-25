@@ -33,7 +33,6 @@ int Interactive::Excution() {
     res_filename=tmpnam();
     struct rlimit runtime;
     runtime.rlim_max=runtime.rlim_cur=CONFIG->GetInteractive_max_run_time()+EXTRA_RUNTIME;
-    total_time_limit *= 3;
     pid_t wid;
     if ((wid=fork())==0) {
         pid_t pgrp = getpid();
@@ -340,6 +339,7 @@ int Interactive::Excution() {
                     if (WIFEXITED(rstat)) {
                         waitpid(pvid, &rstat, 0);
                         LOG("Validator runned.");
+                        LOG("Validator exit status: " + Inttostring(WEXITSTATUS(rstat)));
                         waitcnt = 10;
                         while (waitcnt--) {
                             usleep(50000);
@@ -347,6 +347,7 @@ int Interactive::Excution() {
                             if (WIFEXITED(cstat)) {
                                 waitpid(vpid,&cstat,0);
                                 LOG("User program runned.");
+                                LOG("User program exit status: " + Inttostring(WEXITSTATUS(cstat)));
                                 exit(WEXITSTATUS(rstat));
                             }
                         }
@@ -359,6 +360,7 @@ int Interactive::Excution() {
                     if (WIFEXITED(cstat)) {
                         waitpid(vpid,&cstat,0);
                         LOG("User program runned.");
+                        LOG("User program exit status: " + Inttostring(WEXITSTATUS(cstat)));
                         waitcnt = 10;
                         while (waitcnt--) {
                             usleep(50000);
@@ -366,6 +368,7 @@ int Interactive::Excution() {
                             if (WIFEXITED(rstat)) {
                                 waitpid(pvid, &rstat, 0);
                                 LOG("Validator runned.");
+                                LOG("Validator exit status: " + Inttostring(WEXITSTATUS(rstat)));
                                 exit(WEXITSTATUS(rstat));
                             }
                         }
