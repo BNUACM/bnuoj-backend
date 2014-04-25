@@ -31,10 +31,12 @@ int Interactive::Excution() {
     system(((string)"chmod +x "+exc_filename).c_str());
     system(((string)"chmod +x "+validator_exc_filename).c_str());
     res_filename=tmpnam();
+    Savetofile(res_filename,"");
     struct rlimit runtime;
     runtime.rlim_max=runtime.rlim_cur=CONFIG->GetInteractive_max_run_time()+EXTRA_RUNTIME;
     pid_t wid;
     if ((wid=fork())==0) {
+        setpgid(0, 0);
         pid_t pgrp = getpid();
         pid_t vpid;
         int vtorPipe[2];
@@ -287,6 +289,7 @@ int Interactive::Excution() {
             pid_t pvid;
             if ((pvid = fork()) == 0) {
                 LOGGER->addIdentifier(getpid(), "Validator");
+                LOG("Executing Validator");
                 setpgid(0, pgrp);
                 dup2(rtovPipe[0], STDIN_FILENO);
                 dup2(vtorPipe[1], STDOUT_FILENO);
@@ -328,6 +331,7 @@ int Interactive::Excution() {
                 exit(0);
             } else {
                 LOGGER->addIdentifier(getpid(), "ValidatorWatcher");
+                LOG("Watching Validator...");
                 close(vtorPipe[0]);
                 close(vtorPipe[1]);
                 close(rtovPipe[0]);
@@ -379,6 +383,7 @@ int Interactive::Excution() {
                 }
                 exit(0);
             }
+            exit(0);
         }
         exit(0);
     }
@@ -394,13 +399,13 @@ int Interactive::Excution() {
             cnt++;
             gettimeofday(&case_nowv,&case_nowz);
             tused=case_nowv.tv_sec-case_startv.tv_sec;
-            if (cnt%20==0) LOG("Running Used: "+Inttostring(tused));
-            if (waitpid(wid,&rstat,WNOHANG)==0) {
+            if (cnt%20 == 0) LOG("Running Used: "+Inttostring(tused));
+            pid_t exit_pid;
+            if ((exit_pid=waitpid(wid,&rstat,WNOHANG))==0) {
                 if (tused>runtime.rlim_max) {
                     result="Time Limit Exceed";
                     LOG("Time too much!");
-                    LOG("kill `pstree -p "+Inttostring(wid)+" | sed 's/(/\\n(/g' | grep '(' | sed 's/(\\(.*\\)).*/\\1/' | tr \"\\n\" \" \"`");
-                    system(("kill `pstree -p "+Inttostring(wid)+" | sed 's/(/\\n(/g' | grep '(' | sed 's/(\\(.*\\)).*/\\1/' | tr \"\\n\" \" \"`").c_str());
+                    kill(-wid, SIGKILL);
                     waitpid(wid,&rstat,0);
                     return 1;
                 }
@@ -408,12 +413,12 @@ int Interactive::Excution() {
             else if (WIFSIGNALED(rstat) && WTERMSIG(rstat)!=0) {
                 result="Judge Error";
                 LOG("Something is wrong.");
-                LOG("kill `pstree -p "+Inttostring(wid)+" | sed 's/(/\\n(/g' | grep '(' | sed 's/(\\(.*\\)).*/\\1/' | tr \"\\n\" \" \"`");
-                system(("kill `pstree -p "+Inttostring(wid)+" | sed 's/(/\\n(/g' | grep '(' | sed 's/(\\(.*\\)).*/\\1/' | tr \"\\n\" \" \"`").c_str());
+                kill(-wid, SIGKILL);
                 waitpid(wid,&rstat,0);
                 return 1;
             }
-            if (WIFEXITED(rstat)) {
+            if (exit_pid == wid && WIFEXITED(rstat)) {
+                LOG("Exited. Status: " + Inttostring(rstat));
                 waitpid(wid,&rstat,0);
                 LOG("Runned.");
                 break;
