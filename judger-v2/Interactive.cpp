@@ -411,7 +411,7 @@ int Interactive::Excution() {
                 }
             }
             else if (WIFSIGNALED(rstat) && WTERMSIG(rstat)!=0) {
-                result="Judge Error";
+                result="Wrong Answer";
                 LOG("Something is wrong.");
                 kill(-wid, SIGKILL);
                 waitpid(wid,&rstat,0);
