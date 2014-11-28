@@ -169,6 +169,7 @@ int Program::Compile(string source, int language) {
         struct timezone case_startz,case_nowz;
         gettimeofday(&case_startv,&case_startz);
         int cnt=-1;
+		cstat=-1;
         while (1) {
             usleep(50000);
             cnt++;
@@ -464,6 +465,7 @@ int Program::Excution() {
         struct timezone case_startz,case_nowz;
         gettimeofday(&case_startv,&case_startz);
         int cnt=-1;
+		rstat=-1;
         while (1) {
             usleep(50000);
             cnt++;
