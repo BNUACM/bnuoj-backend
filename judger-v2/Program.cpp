@@ -169,6 +169,7 @@ int Program::Compile(string source, int language) {
         struct timezone case_startz,case_nowz;
         gettimeofday(&case_startv,&case_startz);
         int cnt=-1;
+		cstat=-1;
         while (1) {
             usleep(50000);
             cnt++;
@@ -191,7 +192,7 @@ int Program::Compile(string source, int language) {
                 waitpid(cpid,&cstat,0);
                 return 2;
             }
-            if (WIFEXITED(cstat)) {
+            else if (WIFEXITED(cstat)) {
                 waitpid(cpid,&cstat,0);
                 LOG("Compiled");
                 break;
@@ -464,6 +465,7 @@ int Program::Excution() {
         struct timezone case_startz,case_nowz;
         gettimeofday(&case_startv,&case_startz);
         int cnt=-1;
+		rstat=-1;
         while (1) {
             usleep(50000);
             cnt++;
@@ -488,7 +490,7 @@ int Program::Excution() {
                 waitpid(wid,&rstat,0);
                 return 1;
             }
-            if (WIFEXITED(rstat)) {
+            else if (WIFEXITED(rstat)) {
                 waitpid(wid,&rstat,0);
                 LOG("Runned.");
                 break;
