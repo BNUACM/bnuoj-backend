@@ -102,48 +102,6 @@ int Program::Compile(string source, int language) {
     src_filename=base_filename+src_extension[language];
     err_filename=base_filename+".err";
     Savetofile(src_filename,source);
-    string compile_command;
-    switch (language) {
-        case CPPLANG:
-            compile_command=(string)"g++ "+src_filename+" -o "+exc_filename+" -O -fno-asm -Wall -lm 2>"+cinfo_filename;
-            break;
-        case CLANG:
-            compile_command=(string)"gcc "+src_filename+" -o "+exc_filename+" -O -fno-asm -Wall -lm 2>"+cinfo_filename;
-            break;
-        case CLANGPPLANG:
-            compile_command=(string)"clang++ "+src_filename+" -o "+exc_filename+" -O -fno-asm -Wall -lm 2>"+cinfo_filename;
-            break;
-        case CLANGLANG:
-            compile_command=(string)"clang "+src_filename+" -o "+exc_filename+" -O -fno-asm -Wall -lm 2>"+cinfo_filename;
-            break;
-        case FORTLANG:
-            compile_command=(string)"gfortran "+src_filename+" -o "+exc_filename+" -Wall 2>"+cinfo_filename;
-            break;
-        case JAVALANG:
-            compile_command=(string)"javac -g:none -Xlint "+src_filename+" 2>"+cinfo_filename;
-            break;
-        case FPASLANG:
-            compile_command=(string)"fpc "+src_filename+" -o"+exc_filename+" -Co -Cr -Ct -Ci >"+cinfo_filename;
-            break;
-        case PYLANG:
-            compile_command=(string)"python -c \"import py_compile; py_compile.compile(\'"+src_filename+"\')\" 2>"+cinfo_filename;
-            break;
-        case CSLANG:
-            compile_command=(string)"mcs "+src_filename+" -out:"+exc_filename+" 2>"+cinfo_filename;
-            break;
-        case ADALANG:
-            compile_command=(string)"gnatmake "+src_filename+" 2>"+cinfo_filename;
-            break;
-        case SMLLANG:
-            compile_command=(string)"mlton "+src_filename+" -output "+exc_filename+" 2>"+cinfo_filename;
-            break;
-        case PERLLANG:
-        case RUBYLANG:
-            compile_command="";
-            break;
-        default:
-            return -1;
-    }
     LOG("Compiling "+src_filename);
     struct rlimit compile_limit;
     compile_limit.rlim_max=compile_limit.rlim_cur=compile_time_limit;
@@ -151,14 +109,50 @@ int Program::Compile(string source, int language) {
     if ((cpid=fork())==0) {
         LOGGER->addIdentifier(getpid(), "Compiler");
         usleep(50000);
+        freopen(cinfo_filename.c_str(),"w",stderr);
         setrlimit(RLIMIT_CPU,&compile_limit);
-        LOG("Compile Command: "+compile_command);
-        int res=system(compile_command.c_str());
-        /*if (res!=0) {
-            usleep(100000);
-            LOG("Got error: "+Inttostring(res));
-            res=system(compile_command.c_str());
-        }*/
+        setuid(lowprivid);
+        switch (language) {
+            case CPPLANG:
+                execl("/usr/bin/g++","g++",src_filename.c_str(),"-o",exc_filename.c_str(),"-O","-fno-asm","-Wall","-lm",NULL);
+                break;
+            case CLANG:
+                execl("/usr/bin/gcc","gcc",src_filename.c_str(),"-o",exc_filename.c_str(),"-O","-fno-asm","-Wall","-lm",NULL);
+                break;
+            case CLANGPPLANG:
+                execl("/usr/bin/clang++","clang++",src_filename.c_str(),"-o",exc_filename.c_str(),"-O","-fno-asm","-Wall","-lm",NULL);
+                break;
+            case CLANGLANG:
+                execl("/usr/bin/clang","clang",src_filename.c_str(),"-o",exc_filename.c_str(),"-O","-fno-asm","-Wall","-lm",NULL);
+                break;
+            case FORTLANG:
+                execl("/usr/bin/gfortran","gfortran",src_filename.c_str(),"-o",exc_filename.c_str(),"-Wall",NULL);
+                break;
+            case JAVALANG:
+                execl("/usr/bin/javac","javac","-g:none","-Xlint",src_filename.c_str(),NULL);
+                break;
+            case FPASLANG:
+                execl("/usr/bin/fpc","fpc",src_filename.c_str(),"-o",exc_filename.c_str(),"-Co","-Cr","-Ct","-Ci",NULL);
+                break;
+            case PYLANG:
+                execl("/usr/bin/python","python","-c",("\"import py_compile; py_compile.compile(\'"+src_filename+"\')\"").c_str(),NULL);
+                break;
+            case CSLANG:
+                execl("/usr/bin/mcs","mcs",src_filename.c_str(),("-out:"+exc_filename).c_str(),NULL);
+                break;
+            case ADALANG:
+                execl("/usr/bin/gnatmake","gnatmake",src_filename.c_str(),NULL);
+                break;
+            case SMLLANG:
+                execl("/usr/bin/mlton","mlton",src_filename.c_str(),"-output",exc_filename.c_str(),NULL);
+                break;
+            case PERLLANG:
+                break;
+            case RUBYLANG:
+                break;
+            default:
+                return -1;
+        }
         exit(0);
     }
     else {
@@ -208,10 +202,8 @@ int Program::Compile(string source, int language) {
         return 1;
     }
     else if (language==ADALANG) {
-        compile_command=(string)"gnatbind -x "+(base_filename+".ali")+" 2>"+cinfo_filename;
-        system(compile_command.c_str());
-        compile_command=(string)"gnatlink "+(base_filename+".ali")+" 2>"+cinfo_filename;
-        system(compile_command.c_str());
+        execl("/usr/bin/gnatbind","gnatbind","-x",(base_filename+".ali").c_str(),NULL);
+        execl("/usr/bin/gnatlink","gnatlink",(base_filename+".ali").c_str(),NULL);
         if (!Checkfile(exc_filename)) {
             return 1;
         }
