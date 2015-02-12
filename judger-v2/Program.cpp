@@ -100,7 +100,6 @@ int Program::Compile(string source, int language) {
     else base_filename = CONFIG->GetTmpfile_path() + "Main";
     exc_filename=base_filename+exc_extension[language];
     src_filename=base_filename+src_extension[language];
-    err_filename=base_filename+".err";
     Savetofile(src_filename,source);
     LOG("Compiling "+src_filename);
     struct rlimit compile_limit;
@@ -195,18 +194,8 @@ int Program::Compile(string source, int language) {
         system(("kill `pstree -p "+Inttostring(cpid)+" | sed 's/(/\\n(/g' | grep '(' | sed 's/(\\(.*\\)).*/\\1/' | tr \"\\n\" \" \"`").c_str());
     }
 
-   if (!Checkfile(exc_filename)&&(language==CPPLANG||language==CLANG||language==FPASLANG||language==FORTLANG||language==SMLLANG||language==CSLANG||language==JAVALANG||language==PYLANG||language==CLANGPPLANG||language==CLANGLANG)) {
+   if (!Checkfile(exc_filename)&&(language==CPPLANG||language==CLANG||language==FPASLANG||language==FORTLANG||language==SMLLANG||language==CSLANG||language==JAVALANG||language==PYLANG||language==CLANGPPLANG||language==CLANGLANG||language==ADALANG)) {
         return 1;
-    }
-    if (!Checkfile(base_filename+".ali")&&language==ADALANG) {
-        return 1;
-    }
-    else if (language==ADALANG) {
-        execl("/usr/bin/gnatbind","gnatbind","-x",(base_filename+".ali").c_str(),NULL);
-        execl("/usr/bin/gnatlink","gnatlink",(base_filename+".ali").c_str(),NULL);
-        if (!Checkfile(exc_filename)) {
-            return 1;
-        }
     }
     return 0;
 }
