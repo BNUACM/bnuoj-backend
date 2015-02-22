@@ -134,7 +134,7 @@ int Program::Compile(string source, int language) {
                 execl("/usr/bin/fpc","fpc",src_filename.c_str(),"-o",exc_filename.c_str(),"-Co","-Cr","-Ct","-Ci",NULL);
                 break;
             case PYLANG:
-                execl("/usr/bin/python","python","-c",("\"import py_compile; py_compile.compile(\'"+src_filename+"\')\"").c_str(),NULL);
+                execl("/usr/bin/python","python","-c",("import py_compile; py_compile.compile(\'"+src_filename+"\')").c_str(),NULL);
                 break;
             case CSLANG:
                 execl("/usr/bin/mcs","mcs",src_filename.c_str(),("-out:"+exc_filename).c_str(),NULL);
