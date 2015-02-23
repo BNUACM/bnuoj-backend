@@ -16,39 +16,39 @@
 
 class JudgerThread {
 public:
-    JudgerThread(SocketHandler *, string);
-    virtual ~JudgerThread();
-    void run();
+  JudgerThread(SocketHandler *, string);
+  virtual ~JudgerThread();
+  void run();
 
-    Submit* Getcurrent_submit() const {
-        return current_submit;
-    }
+  Submit* Getcurrent_submit() const {
+    return current_submit;
+  }
 
-    void Setcurrent_submit(Submit* current_submit) {
-        this->current_submit = current_submit;
-    }
+  void Setcurrent_submit(Submit* current_submit) {
+    this->current_submit = current_submit;
+  }
 
-    string Getoj() const {
-        return oj;
-    }
+  string Getoj() const {
+    return oj;
+  }
 
-    void Setoj(string oj) {
-        this->oj = oj;
-    }
+  void Setoj(string oj) {
+    this->oj = oj;
+  }
 
 private:
-    DatabaseHandler * db;
-    SocketHandler * socket;
-    string oj;
-    Submit * current_submit;
-    
-    void prepareBottForRun(Bott *, string);
-    void prepareBottForChallenge(Bott *, string);
-    void updateRunResult(string, string);
-    void updateRunStatus(Bott *);
-    void updateStatistics(string, string);
-    void updateChallengeResult(string, string);
-    void updateChallengeStatus(Bott *);
+  DatabaseHandler * db;
+  SocketHandler * socket;
+  string oj;
+  Submit * current_submit;
+
+  void prepareBottForRun(Bott *, string);
+  void prepareBottForChallenge(Bott *, string);
+  void updateRunResult(string, string);
+  void updateRunStatus(Bott *);
+  void updateStatistics(string, string);
+  void updateChallengeResult(string, string);
+  void updateChallengeStatus(Bott *);
 };
 
 #endif	/* JUDGERTHREAD_H */

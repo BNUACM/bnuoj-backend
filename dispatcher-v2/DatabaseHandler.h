@@ -12,14 +12,14 @@
 
 class DatabaseHandler {
 public:
-    DatabaseHandler();
-    virtual ~DatabaseHandler();
-    vector <map<string, string> > Getall_results(string);
-    string escape(string);
-    void query(string);
+  DatabaseHandler();
+  virtual ~DatabaseHandler();
+  vector <map<string, string> > Getall_results(string);
+  string escape(string);
+  void query(string);
 
 private:
-    MYSQL * mysql;
+  MYSQL * mysql;
 };
 
 #endif	/* DATABASEHANDLER_H */
