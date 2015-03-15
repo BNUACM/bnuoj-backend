@@ -268,6 +268,8 @@ int Program::Excution() {
       switch (language) {
         case CPPLANG:
         case CLANG:
+        case CLANGLANG:
+        case CLANGPPLANG:
         case FORTLANG:
         case FPASLANG:
         case SMLLANG:
