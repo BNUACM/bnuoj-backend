@@ -9,6 +9,9 @@
 #define BOTT_H
 
 #include "dispatcher.h"
+#include "rapidjson/document.h"
+
+using namespace rapidjson;
 
 class Bott {
 public:
@@ -249,6 +252,9 @@ private:
   map <string, string> infos;
   fstream fin;
 
+  void addIntValue(Document &, const char *, int);
+  void addStringValue(Document &, const char *, string);
+  void addStringValueToRef(Document &, Value &, const char *, string);
   string parseUntil(string end);
   string out_filename;
 

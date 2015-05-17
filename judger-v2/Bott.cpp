@@ -1,6 +1,8 @@
 #include "Bott.h"
 #include "Logger.h"
 #include "chaclient.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 extern string tmpnam();
 
@@ -28,67 +30,122 @@ string Bott::parseUntil(string end) {
 }
 
 Bott::Bott(string filename) {
-  string name, value;
-  infos.clear();
-  fin.open(filename.c_str(), fstream::in);
-  while (fin >> name) {
-    if (name == "__SOURCE-CODE-BEGIN-LABLE__")
-      src = parseUntil("__SOURCE-CODE-END-LABLE__");
-    else if (name == "__COMPILE-INFO-BEGIN-LABLE__")
-      ce_info = parseUntil("__COMPILE-INFO-END-LABLE__");
-    else if (name == "__DATA-DETAIL-BEGIN-LABLE__")
-      data_detail = parseUntil("__DATA-DETAIL-END-LABLE__");
-    else if (name == "__CHALLENGE-DETAIL-BEGIN-LABLE__")
-      cha_detail = parseUntil("__CHALLENGE-DETAIL-END-LABLE__");
-    else {
-      getline(fin, value);
-      infos[name] = value;
-      //            LOG(name + " : " + value);
+  Document document;
+  document.Parse(loadAllFromFile(filename).c_str());
+  if (document.HasMember("type")) {
+    type = document["type"].GetInt();
+  }
+  if (document.HasMember("runid")) {
+    runid = satoi(document["runid"].GetString());
+  }
+  if (document.HasMember("source")) {
+    src = document["source"].GetString();
+  }
+  if (document.HasMember("compileInfo")) {
+    ce_info = document["compileInfo"].GetString();
+  }
+  if (document.HasMember("language")) {
+    language = satoi(document["language"].GetString());
+  }
+  if (document.HasMember("pid")) {
+    pid = satoi(document["pid"].GetString());
+  }
+  if (document.HasMember("testcases")) {
+    number_of_testcases = satoi(document["testcases"].GetString());
+  }
+  if (document.HasMember("timeLimit")) {
+    time_limit = satoi(document["timeLimit"].GetString());
+  }
+  if (document.HasMember("caseLimit")) {
+    case_limit = satoi(document["caseLimit"].GetString());
+    if (case_limit == 0) {
+      case_limit = time_limit;
     }
   }
-  fin.close();
-  if (infos.count("<type>")) type = satoi(infos["<type>"]);
-  if (infos.count("<runid>")) runid = satoi(infos["<runid>"]);
-  if (infos.count("<cha_id>")) cha_id = satoi(infos["<cha_id>"]);
-  if (infos.count("<language>")) language = satoi(infos["<language>"]);
-  if (infos.count("<pid>")) pid = satoi(infos["<pid>"]);
-  if (infos.count("<testcases>"))
-    number_of_testcases = satoi(infos["<testcases>"]);
-  if (infos.count("<time_limit>")) time_limit = satoi(infos["<time_limit>"]);
-  if (infos.count("<case_limit>")) case_limit = satoi(infos["<case_limit>"]);
-  if (infos.count("<memory_limit>"))
-    memory_limit = satoi(infos["<memory_limit>"]);
-  if (infos.count("<special>")) spj = satoi(infos["<special>"]);
-  if (infos.count("<vname>")) vname = infos["<vname>"];
-  if (infos.count("<vid>")) vid = infos["<vid>"];
-  if (infos.count("<memory_used>")) memory_used = satoi(infos["<memory_used>"]);
-  if (infos.count("<time_used>")) memory_used = satoi(infos["<time_used>"]);
-  if (infos.count("<result>")) result = infos["<result>"];
-  if (infos.count("<data_type>")) data_type = satoi(infos["<data_type>"]);
-  if (infos.count("<data_lang>")) data_lang = satoi(infos["<data_lang>"]);
-  if (infos.count("<challenge_result>"))
-    cha_result = infos["<challenge_result>"];
+  if (document.HasMember("memoryLimit")) {
+    memory_limit = satoi(document["memoryLimit"].GetString());
+  }
+  if (document.HasMember("spjStatus")) {
+    spj = satoi(document["spjStatus"].GetString());
+  }
+  if (document.HasMember("vname")) {
+    vname = document["vname"].GetString();
+  }
+  if (document.HasMember("vid")) {
+    vid = document["vid"].GetString();
+  }
+  if (document.HasMember("memoryUsed")) {
+    memory_used = satoi(document["memoryUsed"].GetString());
+  }
+  if (document.HasMember("timeUsed")) {
+    time_used = satoi(document["timeUsed"].GetString());
+  }
+  if (document.HasMember("result")) {
+    result = document["result"].GetString();
+  }
+  if (document.HasMember("challenge")) {
+    if (document["challenge"].HasMember("id")) {
+      cha_id = satoi(document["challenge"]["id"].GetString());
+    }
+    if (document["challenge"].HasMember("dataType")) {
+      data_type = satoi(document["challenge"]["dataType"].GetString());
+    }
+    if (document["challenge"].HasMember("dataLanguage")) {
+      data_lang = satoi(document["challenge"]["dataLanguage"].GetString());
+    }
+    if (document["challenge"].HasMember("dataDetail")) {
+      data_detail = document["challenge"]["dataDetail"].GetString();
+    }
+    if (document["challenge"].HasMember("detail")) {
+      cha_detail = document["challenge"]["detail"].GetString();
+    }
+    if (document["challenge"].HasMember("result")) {
+      cha_result = document["challenge"]["result"].GetString();
+    }
+  }
+}
+
+void Bott::addIntValue(Document & document, const char * name, int v) {
+  Value value(v);
+  document.AddMember(StringRef(name), value, document.GetAllocator());
+}
+
+void Bott::addStringValue(Document & document, const char * name, string v) {
+  Value value(StringRef(v.c_str()));
+  document.AddMember(StringRef(name), value, document.GetAllocator());
+}
+
+void Bott::addStringValueToRef(
+    Document & document, Value & ref, const char * name, string v) {
+  Value value(StringRef(v.c_str()));
+  document.AddMember(StringRef(name), value, document.GetAllocator());
 }
 
 void Bott::toFile() {
+  Document document;
+  document.SetObject();
+  addIntValue(document, "type", type);
   memory_used /= 1024;
-  FILE *fp = fopen(out_filename.c_str(), "w");
+  
   if (type == CHALLENGE_REPORT) {
-    fprintf(fp, "<type> %d\n<cha_id> %d\n<cha_result> %s\n",
-            CHALLENGE_REPORT, cha_id, cha_result.c_str());
-    fprintf(fp, "__CHALLENGE-DETAIL-BEGIN-LABLE__\n");
-    fprintf(fp, "%s\n", cha_detail.c_str());
-    fprintf(fp, "__CHALLENGE-DETAIL-END-LABLE__\n");
+    Value challenge;
+    challenge.SetObject();
+    addStringValueToRef(document, challenge, "id", intToString(cha_id));
+    addStringValueToRef(document, challenge, "result", cha_result);
+    addStringValueToRef(document, challenge, "detail", cha_detail);
+    document.AddMember("challenge", challenge, document.GetAllocator());
   }
   if (type == RESULT_REPORT) {
-    fprintf(
-        fp,
-        "<type> %d\n<runid> %d\n<memory_used> %d\n<time_used> %d\n"
-            "<result> %s\n",
-        RESULT_REPORT, runid, memory_used, time_used, result.c_str());
-    fprintf(fp, "__COMPILE-INFO-BEGIN-LABLE__\n");
-    fprintf(fp, "%s\n", ce_info.c_str());
-    fprintf(fp, "__COMPILE-INFO-END-LABLE__\n");
+    addStringValue(document, "runid", intToString(runid));
+    addStringValue(document, "memoryUsed", intToString(memory_used));
+    addStringValue(document, "timeUsed", intToString(time_used));
+    addStringValue(document, "result", result);
+    addStringValue(document, "compileInfo", ce_info);
   }
+  FILE *fp = fopen(out_filename.c_str(), "w");
+  StringBuffer buffer;
+  Writer<StringBuffer> writer(buffer);
+  document.Accept(writer);
+  fprintf(fp, "%s", buffer.GetString());
   fclose(fp);
 }
