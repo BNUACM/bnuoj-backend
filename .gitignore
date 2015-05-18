@@ -22,3 +22,6 @@ include
 # ignore log files
 *.log
 nohup.out
+
+# ignore config files
+config.ini
