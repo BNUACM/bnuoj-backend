@@ -18,17 +18,6 @@ int Bott::satoi(string str) {
   return atoi(str.c_str());
 }
 
-string Bott::parseUntil(string end) {
-  string res = "", tmps;
-  getline(fin, tmps);
-  getline(fin, tmps);
-  while (tmps != end) {
-    res += tmps + "\n";
-    getline(fin, tmps);
-  }
-  return res;
-}
-
 Bott::Bott(string filename) {
   Document document;
   document.Parse(loadAllFromFile(filename).c_str());

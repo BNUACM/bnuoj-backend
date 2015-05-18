@@ -361,13 +361,9 @@ private:
   string cha_result; //!< Member variable "cha_result"
   string cha_detail; //!< Member variable "cha_detail"
 
-  map <string, string> infos;
-  fstream fin;
-  
   void addIntValue(Document &, const char *, int);
   void addStringValue(Document &, const char *, string);
   void addStringValueToRef(Document &, Value &, const char *, string);
-  string parseUntil(string end);
   int satoi(string str);
   string out_filename;
 

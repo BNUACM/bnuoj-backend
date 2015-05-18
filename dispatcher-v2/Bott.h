@@ -249,13 +249,9 @@ private:
   string cha_result;
   string cha_detail;
 
-  map <string, string> infos;
-  fstream fin;
-
   void addIntValue(Document &, const char *, int);
   void addStringValue(Document &, const char *, string);
   void addStringValueToRef(Document &, Value &, const char *, string);
-  string parseUntil(string end);
   string out_filename;
 
 };
