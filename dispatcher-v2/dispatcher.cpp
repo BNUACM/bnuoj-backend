@@ -133,22 +133,22 @@ void * connection_handler(void * arg) {
   } else if (details[0] == CONFIG->Getsubmit_string()) {
     // format: submit_string\nrunid\nOJ
     LOG("Received a submit, runid: " + details[1] + ", oj: " + details[2]);
-    insert_run(new Submit(NEED_JUDGE, details[1], details[2]));
+    insert_run(new Submit(NEED_JUDGE, stringToInt(details[1]), details[2]));
   } else if (details[0] == CONFIG->Getpretest_string()) {
     // format: pretest_string\nrunid\nOJ
     LOG("Received a pretest request, runid: " + details[1] + ", oj: " +
         details[2]);
-    insert_run(new Submit(DO_PRETEST, details[1], details[2]));
+    insert_run(new Submit(DO_PRETEST, stringToInt(details[1]), details[2]));
   } else if (details[0] == CONFIG->Geterror_rejudge_string()) {
     // format: error_rejudge_string\nrunid\nOJ
     LOG("Received an error rejudge request, runid: " + details[1] + ", oj: " +
         details[2]);
-    insert_run(new Submit(NEED_JUDGE, details[1], details[2]));
+    insert_run(new Submit(NEED_JUDGE, stringToInt(details[1]), details[2]));
   } else if (details[0] == CONFIG->Getchallenge_string()) {
     // format: challenge_string\nchallenge_id\nOJ
     LOG("Received a challenge request, runid: " + details[1] + ", oj: " +
         details[2]);
-    insert_run(new Submit(DO_CHALLENGE, details[1], details[2]));
+    insert_run(new Submit(DO_CHALLENGE, stringToInt(details[1]), details[2]));
   } else if (details[0] == CONFIG->Getrejudge_string()) {
     // format: rejudge_string\nproblem_id\ncontest_id
     LOG("Received a rejudge request, pid: " + details[1] + ", cid: " +
@@ -166,7 +166,8 @@ void * connection_handler(void * arg) {
     delete db;
     for (vector <map<string, string> >::iterator it = result.begin();
         it != result.end(); ++it) {
-      insert_run(new Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
+      insert_run(new Submit(NEED_JUDGE, stringToInt((*it)["runid"]),
+          (*it)["vname"]));
     }
   } else if (details[0] == CONFIG->Gettestall_string()) {
     // format: rejudge_string\ncontest_id
@@ -183,7 +184,8 @@ void * connection_handler(void * arg) {
     delete db;
     for (vector <map<string, string> >::iterator it = result.begin();
         it != result.end(); ++it) {
-      insert_run(new Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
+      insert_run(new Submit(NEED_JUDGE, stringToInt((*it)["runid"]),
+          (*it)["vname"]));
     }
   } else {
     LOG("Illegal connection recieved: " + message);
@@ -242,20 +244,20 @@ void * dispatch(void *) {
           found = true;
           switch ((* it)->Gettype()) {
             case NEED_JUDGE:
-              LOG("Dispatched runid: " + (* it)->Getid() + " for " +
-                  (* it)->Getoj() + " to judge");
+              LOG("Dispatched runid: " + intToString((* it)->Getid()) +
+                  " for " + (* it)->Getoj() + " to judge");
               break;
             case DO_CHALLENGE:
-              LOG("Dispatched chaid: " + (* it)->Getid() + " for " +
-                  (* it)->Getoj() + " to judge");
+              LOG("Dispatched chaid: " + intToString((* it)->Getid()) +
+                  " for " + (* it)->Getoj() + " to judge");
               break;
             case DO_PRETEST:
-              LOG("Dispatched runid: " + (* it)->Getid() + " for " +
-                  (* it)->Getoj() + " to pretest");
+              LOG("Dispatched runid: " + intToString((* it)->Getid()) +
+                  " for " + (* it)->Getoj() + " to pretest");
               break;
             case DO_TESTALL:
-              LOG("Dispatched runid: " + (* it)->Getid() + " for " +
-                  (* it)->Getoj() + " to test all");
+              LOG("Dispatched runid: " + intToString((* it)->Getid()) +
+                  " for " + (* it)->Getoj() + " to test all");
               break;
           }
           (* ij)->Setcurrent_submit(*it);
@@ -287,7 +289,8 @@ int main() {
 
   for (vector <map<string, string> >::iterator it = result.begin();
       it != result.end(); ++it) {
-    insert_run(new Submit(NEED_JUDGE, (*it)["runid"], (*it)["vname"]));
+    insert_run(new Submit(NEED_JUDGE, stringToInt((*it)["runid"]),
+        (*it)["vname"]));
   }
   result.clear();
   delete db;

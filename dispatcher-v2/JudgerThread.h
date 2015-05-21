@@ -42,12 +42,12 @@ private:
   string oj;
   Submit * current_submit;
 
-  void prepareBottForRun(Bott *, string);
-  void prepareBottForChallenge(Bott *, string);
-  void updateRunResult(string, string);
+  void prepareBottForRun(Bott *, int);
+  void prepareBottForChallenge(Bott *, int);
+  void updateRunResult(int, string);
   void updateRunStatus(Bott *);
-  void updateStatistics(string, string);
-  void updateChallengeResult(string, string);
+  void updateStatistics(int, string);
+  void updateChallengeResult(int, string);
   void updateChallengeStatus(Bott *);
 };
 

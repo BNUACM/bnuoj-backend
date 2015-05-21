@@ -32,7 +32,7 @@ JudgerThread::~JudgerThread() {
  * @param bott  The bott file we store infos to
  * @param runid Regular runid
  */
-void JudgerThread::prepareBottForRun(Bott * bott, string runid) {
+void JudgerThread::prepareBottForRun(Bott * bott, int runid) {
   // load basic info from status table
   map<string, string> info = db->Getall_results("\
             SELECT status.source AS source, \
@@ -42,13 +42,14 @@ void JudgerThread::prepareBottForRun(Bott * bott, string runid) {
                    problem.ignore_noc AS ignore_noc, \
                    problem.is_interactive AS is_interactive \
             FROM status, problem \
-            WHERE status.pid = problem.pid AND runid = '" + runid + "' \
+            WHERE status.pid = problem.pid \
+                  AND runid = '" + intToString(runid) + "' \
     ")[0];
 
   bott->Setsrc(info["source"]);
-  bott->Setrunid(info["runid"]);
-  bott->Setlanguage(info["language"]);
-  bott->Setpid(info["pid"]);
+  bott->Setrunid(stringToInt(info["runid"]));
+  bott->Setlanguage(stringToInt(info["language"]));
+  bott->Setpid(stringToInt(info["pid"]));
 
   // DO_TESTALL will ignore time_limit and just use case_limit
   // NEED_JUDGE will set the time_limit together with case_limit
@@ -71,11 +72,11 @@ void JudgerThread::prepareBottForRun(Bott * bott, string runid) {
             WHERE  pid = '" + info["pid"] + "' \
     ")[0];
 
-  bott->Setnumber_of_testcases(info["number_of_testcase"]);
-  bott->Settime_limit(info["time_limit"]);
-  bott->Setcase_limit(info["case_time_limit"]);
-  bott->Setmemory_limit(info["memory_limit"]);
-  bott->Setspj(info["special_judge_status"]);
+  bott->Setnumber_of_testcases(stringToInt(info["number_of_testcase"]));
+  bott->Settime_limit(stringToInt(info["time_limit"]));
+  bott->Setcase_limit(stringToInt(info["case_time_limit"]));
+  bott->Setmemory_limit(stringToInt(info["memory_limit"]));
+  bott->Setspj(stringToInt(info["special_judge_status"]));
   bott->Setvname(info["vname"]);
   bott->Setvid(info["vid"]);
 
@@ -87,7 +88,7 @@ void JudgerThread::prepareBottForRun(Bott * bott, string runid) {
  * @param bott  The bott file we store infos to
  * @param id Challenge id
  */
-void JudgerThread::prepareBottForChallenge(Bott * bott, string id) {
+void JudgerThread::prepareBottForChallenge(Bott * bott, int id) {
   // load basic info from challenge table
   map<string, string> info = db->Getall_results("\
             SELECT source, \
@@ -98,16 +99,17 @@ void JudgerThread::prepareBottForChallenge(Bott * bott, string id) {
                    data_lang, \
                    data_detail \
             FROM   status,challenge \
-            WHERE  status.runid = challenge.runid AND cha_id = '" + id + "' \
+            WHERE  status.runid = challenge.runid \
+                   AND cha_id = '" + intToString(id) + "' \
     ")[0];
 
   bott->Settype(DO_CHALLENGE);
   bott->Setsrc(info["source"]);
-  bott->Setcha_id(info["cha_id"]);
-  bott->Setlanguage(info["language"]);
-  bott->Setpid(info["pid"]);
-  bott->Setdata_type(info["data_type"]);
-  bott->Setdata_lang(info["data_lang"]);
+  bott->Setcha_id(stringToInt(info["cha_id"]));
+  bott->Setlanguage(stringToInt(info["language"]));
+  bott->Setpid(stringToInt(info["pid"]));
+  bott->Setdata_type(stringToInt(info["data_type"]));
+  bott->Setdata_lang(stringToInt(info["data_lang"]));
   bott->Setdata_detail(info["data_detail"]);
 
   // load additional info from problem table
@@ -117,9 +119,9 @@ void JudgerThread::prepareBottForChallenge(Bott * bott, string id) {
             WHERE  pid = '" + info["pid"] + "' \
     ")[0];
 
-  bott->Setcase_limit(info["case_time_limit"]);
-  bott->Setmemory_limit(info["memory_limit"]);
-  bott->Setspj(info["special_judge_status"]);
+  bott->Setcase_limit(stringToInt(info["case_time_limit"]));
+  bott->Setmemory_limit(stringToInt(info["memory_limit"]));
+  bott->Setspj(stringToInt(info["special_judge_status"]));
 
   bott->save();
 }
@@ -129,9 +131,9 @@ void JudgerThread::prepareBottForChallenge(Bott * bott, string id) {
  * @param runid         Runid
  * @param result        Current result
  */
-void JudgerThread::updateRunResult(string runid, string result) {
+void JudgerThread::updateRunResult(int runid, string result) {
   db->query("UPDATE status SET result='" + db->escape(result) +
-            "' WHERE runid = '" + db->escape(runid) + "'");
+            "' WHERE runid = '" + intToString(runid) + "'");
 }
 
 /**
@@ -142,10 +144,10 @@ void JudgerThread::updateRunStatus(Bott * bott) {
   db->query("\
         UPDATE status \
         SET    result = '" + db->escape(bott->Getresult()) + "', \
-               memory_used = '" + db->escape(bott->Getmemory_used()) + "', \
-               time_used = '" + db->escape(bott->Gettime_used()) + "', \
+               memory_used = '" + intToString(bott->Getmemory_used()) + "', \
+               time_used = '" + intToString(bott->Gettime_used()) + "', \
                ce_info = '" + db->escape(bott->Getce_info()) + "' \
-        WHERE  runid = '" + db->escape(bott->Getrunid()) + "'");
+        WHERE  runid = '" + intToString(bott->Getrunid()) + "'");
 }
 
 /**
@@ -158,10 +160,10 @@ void JudgerThread::updateChallengeStatus(Bott * bott) {
         UPDATE challenge \
         SET    result = '" + db->escape(bott->Getcha_result()) + "', \
                cha_detail = '" + db->escape(bott->Getcha_detail()) + "' \
-        WHERE  cha_id = '" + db->escape(bott->Getcha_id()) + "'");
+        WHERE  cha_id = '" + intToString(bott->Getcha_id()) + "'");
 
-  LOG("Challenge result, cha_id: " + bott->Getcha_id() + ", result: " +
-      bott->Getcha_result());
+  LOG("Challenge result, cha_id: " + intToString(bott->Getcha_id()) +
+      ", result: " + bott->Getcha_result());
 
   if (bott->Getcha_result().find("Challenge Success") != string::npos) {
     // challenge success, update status table
@@ -170,7 +172,7 @@ void JudgerThread::updateChallengeStatus(Bott * bott) {
                 SET    status.result = 'Challenged' \
                 WHERE  status.runid = challenge.runid AND \
                        challenge.cha_id = '" +
-              db->escape(bott->Getcha_id()) + "' \
+              intToString(bott->Getcha_id()) + "' \
         ");
   }
 }
@@ -180,9 +182,9 @@ void JudgerThread::updateChallengeStatus(Bott * bott) {
  * @param id            Challenge id
  * @param result        Current result
  */
-void JudgerThread::updateChallengeResult(string id, string result) {
+void JudgerThread::updateChallengeResult(int id, string result) {
   db->query("UPDATE challenge SET cha_result='" + db->escape(result) +
-            "' WHERE cha_id = '" + db->escape(id) + "'");
+            "' WHERE cha_id = '" + intToString(id) + "'");
 }
 
 /**
@@ -190,16 +192,16 @@ void JudgerThread::updateChallengeResult(string id, string result) {
  * @param runid         Runid
  * @param result        Verdict result
  */
-void JudgerThread::updateStatistics(string runid, string result) {
+void JudgerThread::updateStatistics(int runid, string result) {
 
   // load basic info of this run
   map<string, string> run_info = db->Getall_results("\
       SELECT username, status.pid as pid, vname \
       FROM   status, problem \
-      WHERE  runid = '" + db->escape(runid) + "' AND problem.pid = status.pid \
+      WHERE  runid = '" + intToString(runid) + "' AND problem.pid = status.pid \
   ")[0];
 
-  LOG("Updating statistics, runid: " + runid + ", user: " +
+  LOG("Updating statistics, runid: " + intToString(runid) + ", user: " +
       run_info["username"] + ", result: " + result + ", pid: " +
       run_info["pid"]);
 
@@ -269,11 +271,11 @@ void JudgerThread::run() {
           current_submit->Gettype() == DO_PRETEST ||
           current_submit->Gettype() == DO_TESTALL) {
         // A regular run
-        LOG("Load infos of Runid: " + current_submit->Getid());
+        LOG("Load infos of Runid: " + intToString(current_submit->Getid()));
 
         // prepare file for judger
-        filename = Bott::RAW_FILES_DIRECTORY + current_submit->Getid() +
-            Bott::EXTENTION;
+        filename = Bott::RAW_FILES_DIRECTORY +
+            intToString(current_submit->Getid()) + Bott::EXTENTION;
         bott = new Bott();
         bott->Setout_filename(filename);
         prepareBottForRun(bott, current_submit->Getid());
@@ -285,8 +287,8 @@ void JudgerThread::run() {
         try {
           LOG("Sending to judger...");
           socket->sendFile(filename);
-          filename = Bott::RESULTS_DIRECTORY + current_submit->Getid() + "res" +
-              Bott::EXTENTION;
+          filename = Bott::RESULTS_DIRECTORY +
+              intToString(current_submit->Getid()) + "res" + Bott::EXTENTION;
           socket->receiveFile(filename);
           LOG("Got result back from judger.");
         } catch (Exception & e) {
@@ -302,8 +304,8 @@ void JudgerThread::run() {
       } else if (current_submit->Gettype() == DO_CHALLENGE) {
         // A challenge
         LOG("Load infos of Challenge id: " + current_submit->Getid());
-        filename = Bott::CHA_RAW_FILES_DIRECTORY + current_submit->Getid() +
-            Bott::EXTENTION;
+        filename = Bott::CHA_RAW_FILES_DIRECTORY +
+            intToString(current_submit->Getid()) + Bott::EXTENTION;
         bott = new Bott(filename);
         prepareBottForChallenge(bott, current_submit->Getid());
         delete bott;
@@ -313,8 +315,8 @@ void JudgerThread::run() {
 
         try {
           socket->sendFile(filename);
-          filename = Bott::CHA_RESULTS_DIRECTORY + current_submit->Getid() +
-              "res" + Bott::EXTENTION;
+          filename = Bott::CHA_RESULTS_DIRECTORY +
+              intToString(current_submit->Getid()) + "res" + Bott::EXTENTION;
           socket->receiveFile(filename);
         } catch (Exception & e) {
           LOG("Connection lost, requeue Challenge id: " +
