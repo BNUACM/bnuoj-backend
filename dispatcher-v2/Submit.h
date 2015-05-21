@@ -19,7 +19,7 @@ public:
    * @param _id       RunID/ChallengeID according to type
    * @param _oj       Indicate which judger should be used
    */
-  Submit(int _type, string _id, string _oj) : type(_type), id(_id), oj(_oj) {
+  Submit(int _type, int _id, string _oj) : type(_type), id(_id), oj(_oj) {
   }
   virtual ~Submit();
 
@@ -27,7 +27,7 @@ public:
     return oj;
   }
 
-  string Getid() const {
+  int Getid() const {
     return id;
   }
 
@@ -47,7 +47,7 @@ private:
    * examples: when type is NEED_JUDGE, id means runid
    *            when type is DO_CHALLENGE, id means challenge_id (cha_id)
    */
-  string id;
+  int id;
   /*
    * indicate which judger should this submit be processed by
    */

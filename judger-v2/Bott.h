@@ -17,7 +17,7 @@ public:
   /** Access type
    * \return The current value of type
    */
-  int Gettype() {
+  int Gettype() const {
     return type;
   }
 
@@ -31,7 +31,7 @@ public:
   /** Access runid
    * \return The current value of runid
    */
-  int Getrunid() {
+  int Getrunid() const {
     return runid;
   }
 
@@ -45,7 +45,7 @@ public:
   /** Access cha_id
    * \return The current value of cha_id
    */
-  int Getcha_id() {
+  int Getcha_id() const {
     return cha_id;
   }
 
@@ -59,7 +59,7 @@ public:
   /** Access src
    * \return The current value of src
    */
-  string Getsrc() {
+  string Getsrc() const {
     return src;
   }
 
@@ -73,7 +73,7 @@ public:
   /** Access language
    * \return The current value of language
    */
-  int Getlanguage() {
+  int Getlanguage() const {
     return language;
   }
 
@@ -87,7 +87,7 @@ public:
   /** Access pid
    * \return The current value of pid
    */
-  int Getpid() {
+  int Getpid() const {
     return pid;
   }
 
@@ -101,7 +101,7 @@ public:
   /** Access number_of_testcases
    * \return The current value of number_of_testcases
    */
-  int Getnumber_of_testcases() {
+  int Getnumber_of_testcases() const {
     return number_of_testcases;
   }
 
@@ -115,7 +115,7 @@ public:
   /** Access time_limit
    * \return The current value of time_limit
    */
-  int Gettime_limit() {
+  int Gettime_limit() const {
     return time_limit;
   }
 
@@ -129,7 +129,7 @@ public:
   /** Access case_limit
    * \return The current value of case_limit
    */
-  int Getcase_limit() {
+  int Getcase_limit() const {
     return case_limit;
   }
 
@@ -143,7 +143,7 @@ public:
   /** Access memory_limit
    * \return The current value of memory_limit
    */
-  int Getmemory_limit() {
+  int Getmemory_limit() const {
     return memory_limit;
   }
 
@@ -157,7 +157,7 @@ public:
   /** Access spj
    * \return The current value of spj
    */
-  int Getspj() {
+  int Getspj() const {
     return spj;
   }
 
@@ -171,7 +171,7 @@ public:
   /** Access vname
    * \return The current value of vname
    */
-  string Getvname() {
+  string Getvname() const {
     return vname;
   }
 
@@ -185,7 +185,7 @@ public:
   /** Access vid
    * \return The current value of vid
    */
-  string Getvid() {
+  string Getvid() const {
     return vid;
   }
 
@@ -199,7 +199,7 @@ public:
   /** Access memory_used
    * \return The current value of memory_used
    */
-  int Getmemory_used() {
+  int Getmemory_used() const {
     return memory_used;
   }
 
@@ -213,7 +213,7 @@ public:
   /** Access time_used
    * \return The current value of time_used
    */
-  int Gettime_used() {
+  int Gettime_used() const {
     return time_used;
   }
 
@@ -227,7 +227,7 @@ public:
   /** Access result
    * \return The current value of result
    */
-  string Getresult() {
+  string Getresult() const {
     return result;
   }
 
@@ -241,7 +241,7 @@ public:
   /** Access ce_info
    * \return The current value of ce_info
    */
-  string Getce_info() {
+  string Getce_info() const {
     return ce_info;
   }
 
@@ -255,7 +255,7 @@ public:
   /** Access data_type
    * \return The current value of data_type
    */
-  int Getdata_type() {
+  int Getdata_type() const {
     return data_type;
   }
 
@@ -269,7 +269,7 @@ public:
   /** Access data_detail
    * \return The current value of data_detail
    */
-  string Getdata_detail() {
+  string Getdata_detail() const {
     return data_detail;
   }
 
@@ -283,7 +283,7 @@ public:
   /** Access data_lang
    * \return The current value of data_detail
    */
-  int Getdata_lang() {
+  int Getdata_lang() const {
     return data_lang;
   }
 
@@ -297,7 +297,7 @@ public:
   /** Access cha_result
    * \return The current value of cha_result
    */
-  string Getcha_result() {
+  string Getcha_result() const {
     return cha_result;
   }
 
@@ -311,7 +311,7 @@ public:
   /** Access cha_detail
    * \return The current value of cha_detail
    */
-  string Getcha_detail() {
+  string Getcha_detail() const {
     return cha_detail;
   }
 
@@ -325,7 +325,7 @@ public:
   /** Access out_filename
    * \return The current value of out_filename
    */
-  string Getout_filename() {
+  string Getout_filename() const {
     return out_filename;
   }
 
@@ -362,9 +362,9 @@ private:
   string cha_detail; //!< Member variable "cha_detail"
 
   void addIntValue(Document &, const char *, int);
-  void addStringValue(Document &, const char *, string);
-  void addStringValueToRef(Document &, Value &, const char *, string);
-  int satoi(string str);
+  void addStringValue(Document &, const char *, const char *);
+  void addIntValueToRef(Document &, Value &, const char *, int);
+  void addStringValueToRef(Document &, Value &, const char *, const char *);
   string out_filename;
 
 };
