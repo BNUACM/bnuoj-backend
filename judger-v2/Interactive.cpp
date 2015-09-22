@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   Interactive.cpp
  * Author: payper
- * 
+ *
  * Created on 2014年4月24日, 下午5:41
  */
 
@@ -103,7 +103,11 @@ int Interactive::Excution() {
             execl("/usr/bin/ruby", "ruby", src_filename.c_str(), "-W", NULL);
             break;
           case PYLANG:
-            execl("/usr/bin/python", "python", exc_filename.c_str(), NULL);
+          case PY2LANG:
+            execl("/usr/bin/python2", "python2", exc_filename.c_str(), NULL);
+            break;
+          case PY3LANG:
+            execl("/usr/bin/python3", "python3", exc_filename.c_str(), NULL);
             break;
         }
         exit(0);

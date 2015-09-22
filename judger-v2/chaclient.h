@@ -70,7 +70,10 @@ using namespace std;
 #define VCPPLANG 13
 #define CLANGLANG 14
 #define CLANGPPLANG 15
-#define MAX_LANG_NUM 15
+#define PY2LANG 16
+#define PY3LANG 17
+#define CPP11LANG 18
+#define MAX_LANG_NUM 18
 
 #define AC_STATUS 0
 #define CE_STATUS 1
