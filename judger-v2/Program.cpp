@@ -145,7 +145,6 @@ int Program::Compile(string source, int language) {
         execl("/usr/bin/fpc", "fpc", src_filename.c_str(), "-o",
               exc_filename.c_str(), "-Co", "-Cr", "-Ct", "-Ci", NULL);
         break;
-      case PYLANG:
       case PY2LANG:
         execl(
             "/usr/bin/python2", "python2", "-c",
@@ -230,10 +229,9 @@ int Program::Compile(string source, int language) {
 
   if (!Checkfile(exc_filename)&&(language == CPPLANG || language == CLANG ||
       language == FPASLANG || language == FORTLANG || language == SMLLANG ||
-      language == CSLANG || language == JAVALANG || language == PYLANG ||
-      language == PY2LANG || language == PY3LANG || language == CPP11LANG ||
-      language == CLANGPPLANG || language == CLANGLANG ||
-      language == ADALANG)) {
+      language == CSLANG || language == JAVALANG || language == PY2LANG ||
+      language == PY3LANG || language == CPP11LANG || language == CLANGPPLANG ||
+      language == CLANGLANG || language == ADALANG)) {
     return 1;
   }
   return 0;
@@ -305,7 +303,6 @@ int Program::Excution() {
         case RUBYLANG:
           execl("/usr/bin/ruby", "ruby", src_filename.c_str(), "-W", NULL);
           break;
-        case PYLANG:
         case PY2LANG:
           execl("/usr/bin/python2", "python2", exc_filename.c_str(), NULL);
           break;

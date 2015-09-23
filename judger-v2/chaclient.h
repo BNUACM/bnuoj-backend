@@ -59,7 +59,7 @@ using namespace std;
 #define CLANG 2
 #define JAVALANG 3
 #define FPASLANG 4
-#define PYLANG 5
+#define PY2LANG 5
 #define CSLANG 6
 #define FORTLANG 7
 #define PERLLANG 8
@@ -70,10 +70,9 @@ using namespace std;
 #define VCPPLANG 13
 #define CLANGLANG 14
 #define CLANGPPLANG 15
-#define PY2LANG 16
-#define PY3LANG 17
-#define CPP11LANG 18
-#define MAX_LANG_NUM 18
+#define PY3LANG 16
+#define CPP11LANG 17
+#define MAX_LANG_NUM 17
 
 #define AC_STATUS 0
 #define CE_STATUS 1

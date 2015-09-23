@@ -175,15 +175,14 @@ void init_error() {
 }
 
 void init_others() {
-  vmlang[JAVALANG] = vmlang[PYLANG] = vmlang[PY2LANG] = vmlang[PY3LANG] =
+  vmlang[JAVALANG] = vmlang[PY2LANG] = vmlang[PY3LANG] =
       vmlang[PERLLANG] = vmlang[RUBYLANG] = true;
 
   src_extension[CPPLANG] = src_extension[CPP11LANG] = ".cpp";
   src_extension[CLANG] = ".c";
   src_extension[JAVALANG] = ".java";
   src_extension[FPASLANG] = ".pas";
-  src_extension[PYLANG] = src_extension[PY2LANG] = src_extension[PY3LANG] =
-      ".py";
+  src_extension[PY2LANG] = src_extension[PY3LANG] = ".py";
   src_extension[CSLANG] = ".cs";
   src_extension[FORTLANG] = ".f";
   src_extension[PERLLANG] = ".pl";
@@ -198,8 +197,7 @@ void init_others() {
   exc_extension[CLANG] = ".out";
   exc_extension[JAVALANG] = ".class";
   exc_extension[FPASLANG] = ".out";
-  exc_extension[PYLANG] = exc_extension[PY2LANG] = exc_extension[PY3LANG] =
-      ".pyc";
+  exc_extension[PY2LANG] = exc_extension[PY3LANG] = ".pyc";
   exc_extension[CSLANG] = ".exe";
   exc_extension[FORTLANG] = ".out";
   exc_extension[SMLLANG] = ".out";

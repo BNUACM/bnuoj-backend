@@ -102,7 +102,6 @@ int Interactive::Excution() {
           case RUBYLANG:
             execl("/usr/bin/ruby", "ruby", src_filename.c_str(), "-W", NULL);
             break;
-          case PYLANG:
           case PY2LANG:
             execl("/usr/bin/python2", "python2", exc_filename.c_str(), NULL);
             break;
@@ -355,8 +354,12 @@ int Interactive::Excution() {
             execl("/usr/bin/ruby", "ruby", validator_src_filename.c_str(), "-W",
                   NULL);
             break;
-          case PYLANG:
-            execl("/usr/bin/python", "python", validator_exc_filename.c_str(),
+          case PY2LANG:
+            execl("/usr/bin/python2", "python2", validator_exc_filename.c_str(),
+                  NULL);
+            break;
+          case PY3LANG:
+            execl("/usr/bin/python3", "python3", validator_exc_filename.c_str(),
                   NULL);
             break;
         }
