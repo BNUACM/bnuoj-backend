@@ -148,15 +148,15 @@ int Program::Compile(string source, int language) {
       case PY2LANG:
         execl(
             "/usr/bin/python2", "python2", "-c",
-            ((string) "import py_compile; py_compile.compile(\'" +
-                src_filename + "\')").c_str(),
+            ((string) "import py_compile; py_compile.compile('" +
+                src_filename + "')").c_str(),
             NULL);
         break;
       case PY3LANG:
         execl(
             "/usr/bin/python3", "python3", "-c",
-            ((string) "import py_compile; py_compile.compile(\'" +
-                src_filename + "\')").c_str(),
+            ((string) "import py_compile; py_compile.compile('" +
+                src_filename + "', cfile='" + exc_filename + "')").c_str(),
             NULL);
         break;
       case CSLANG:
