@@ -116,6 +116,11 @@ int Program::Compile(string source, int language) {
         execl("/usr/bin/g++", "g++", src_filename.c_str(), "-o",
               exc_filename.c_str(), "-O", "-fno-asm", "-Wall", "-lm", NULL);
         break;
+      case CPP11LANG:
+        execl("/usr/bin/g++", "g++", src_filename.c_str(), "-o",
+              exc_filename.c_str(), "-O", "-fno-asm", "-Wall", "-lm",
+              "--std=c++11", NULL);
+        break;
       case CLANG:
         execl("/usr/bin/gcc", "gcc", src_filename.c_str(), "-o",
               exc_filename.c_str(), "-O", "-fno-asm", "-Wall", "-lm", NULL);
@@ -140,11 +145,18 @@ int Program::Compile(string source, int language) {
         execl("/usr/bin/fpc", "fpc", src_filename.c_str(), "-o",
               exc_filename.c_str(), "-Co", "-Cr", "-Ct", "-Ci", NULL);
         break;
-      case PYLANG:
+      case PY2LANG:
         execl(
-            "/usr/bin/python", "python", "-c",
-            ((string) "import py_compile; py_compile.compile(\'" +
-                src_filename + "\')").c_str(),
+            "/usr/bin/python2", "python2", "-c",
+            ((string) "import py_compile; py_compile.compile('" +
+                src_filename + "')").c_str(),
+            NULL);
+        break;
+      case PY3LANG:
+        execl(
+            "/usr/bin/python3", "python3", "-c",
+            ((string) "import py_compile; py_compile.compile('" +
+                src_filename + "', cfile='" + exc_filename + "')").c_str(),
             NULL);
         break;
       case CSLANG:
@@ -217,9 +229,9 @@ int Program::Compile(string source, int language) {
 
   if (!Checkfile(exc_filename)&&(language == CPPLANG || language == CLANG ||
       language == FPASLANG || language == FORTLANG || language == SMLLANG ||
-      language == CSLANG || language == JAVALANG || language == PYLANG ||
-      language == CLANGPPLANG || language == CLANGLANG ||
-      language == ADALANG)) {
+      language == CSLANG || language == JAVALANG || language == PY2LANG ||
+      language == PY3LANG || language == CPP11LANG || language == CLANGPPLANG ||
+      language == CLANGLANG || language == ADALANG)) {
     return 1;
   }
   return 0;
@@ -267,6 +279,7 @@ int Program::Excution() {
 
       switch (language) {
         case CPPLANG:
+        case CPP11LANG:
         case CLANG:
         case CLANGLANG:
         case CLANGPPLANG:
@@ -290,8 +303,11 @@ int Program::Excution() {
         case RUBYLANG:
           execl("/usr/bin/ruby", "ruby", src_filename.c_str(), "-W", NULL);
           break;
-        case PYLANG:
-          execl("/usr/bin/python", "python", exc_filename.c_str(), NULL);
+        case PY2LANG:
+          execl("/usr/bin/python2", "python2", exc_filename.c_str(), NULL);
+          break;
+        case PY3LANG:
+          execl("/usr/bin/python3", "python3", exc_filename.c_str(), NULL);
           break;
       }
       exit(0);

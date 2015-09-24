@@ -345,6 +345,7 @@ void dojudge(int type) {
   usrprogram->Sethas_input(true);
   usrprogram->Setin_filename(inpfile);
   usrprogram->Setout_filename(CONFIG->GetTmpfile_path() + tmpnam());
+  usrprogram->Seterr_filename(CONFIG->GetTmpfile_path() + tmpnam());
   if (type == NEED_JUDGE)
     usrprogram->Settotal_time_limit(bott->Gettime_limit());
   else usrprogram->Settotal_time_limit(bott->Getcase_limit() * in_files.size());
