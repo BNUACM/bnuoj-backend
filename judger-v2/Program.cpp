@@ -119,7 +119,7 @@ int Program::Compile(string source, int language) {
       case CPP11LANG:
         execl("/usr/bin/g++", "g++", src_filename.c_str(), "-o",
               exc_filename.c_str(), "-O", "-fno-asm", "-Wall", "-lm",
-              "--std=c++11x", NULL);
+              "--std=c++11", NULL);
         break;
       case CLANG:
         execl("/usr/bin/gcc", "gcc", src_filename.c_str(), "-o",
