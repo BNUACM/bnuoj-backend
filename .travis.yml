@@ -1,0 +1,9 @@
+language: cpp
+compiler:
+  - clang
+  - gcc
+install:
+  - sudo apt-get install -qq libmysqlclient-dev
+script:
+  - cd judger-v2 && ./configure && make && cd -
+  - cd dispatcher-v2 && ./configure && make && cd -
