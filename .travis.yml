@@ -3,7 +3,9 @@ compiler:
   - clang
   - gcc
 install:
-  - sudo apt-get install -qq libmysqlclient-dev
+  - sudo apt-get install -qq
+    libmysqlclient-dev
+    automake
 script:
   - cd judger-v2
   - ./configure && make
