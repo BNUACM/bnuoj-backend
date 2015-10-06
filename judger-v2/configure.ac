@@ -5,6 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([bnuoj-judger], [2.0.0], [crccw@moonux.org])
 AC_CONFIG_SRCDIR([src/chaclient.h])
 AC_CONFIG_HEADERS([config.h])
+AM_MAINTAINER_MODE([disable])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.

@@ -5,6 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([bnuoj-dispatcher], [2.0.0], [crccw@moonux.org])
 AC_CONFIG_SRCDIR([src/dispatcher.cpp])
 AC_CONFIG_HEADER([config.h])
+AM_MAINTAINER_MODE([disable])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
