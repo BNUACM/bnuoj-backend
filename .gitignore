@@ -12,11 +12,8 @@ build
 *.layout
 *.depend
 dist
-Makefile
 nbproject
 obj
-src
-include
 .dep.inc
 
 # ignore log files
