@@ -142,8 +142,8 @@ int Program::Compile(string source, int language) {
               src_filename.c_str(), NULL);
         break;
       case FPASLANG:
-        execl("/usr/bin/fpc", "fpc", src_filename.c_str(), "-o",
-              exc_filename.c_str(), "-Co", "-Cr", "-Ct", "-Ci", NULL);
+        execl("/usr/bin/fpc", "fpc", src_filename.c_str(),
+              ("-o" + exc_filename).c_str(), "-Co", "-Cr", "-Ct", "-Ci", NULL);
         break;
       case PY2LANG:
         execl(
