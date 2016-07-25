@@ -96,6 +96,9 @@ string Program::Inttostring(int x) {
 }
 
 int Program::Compile(string source, int language) {
+  if (is_dangerous_code(source, language)) {
+    return 3;
+  }
   cinfo_filename = CONFIG->GetTmpfile_path() + tmpnam() + ".txt";
   if (language != JAVALANG)
     base_filename = CONFIG->GetTmpfile_path() + tmpnam();
@@ -584,6 +587,9 @@ void Program::Trytocompile(string source, int language) {
   } else if (res == 2) {
     //COMPILE ERROR
     result = "Compile Error";
+    return;
+  } else if (res == 3) {
+    result = "Restricted Function";
     return;
   }
   int cnt = 0;
