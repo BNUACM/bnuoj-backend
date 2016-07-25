@@ -56,12 +56,15 @@ int Interactive::Excution() {
       struct rusage rinfo;
       setrlimit(RLIMIT_CPU, &runtime);
       struct user_regs_struct reg;
-      struct rlimit time_limit, output_limit;
+      struct rlimit time_limit, output_limit, nproc_limit;
 
       time_limit.rlim_cur = total_time_limit;
       time_limit.rlim_cur = (time_limit.rlim_cur + 999) / 1000;
       if (time_limit.rlim_cur <= 0) time_limit.rlim_cur = 1;
       time_limit.rlim_max = time_limit.rlim_cur + 1;
+
+      nproc_limit.rlim_cur = nproc_limit.rlim_max = 1;
+
       if ((pid = fork()) == 0) {
         LOGGER->addIdentifier(getpid(), "Runner");
         dup2(vtorPipe[0], STDIN_FILENO);
@@ -74,6 +77,7 @@ int Interactive::Excution() {
         LOG((string) "Time limit for this program is " +
             Inttostring(time_limit.rlim_cur));
         setrlimit(RLIMIT_CPU, &time_limit);
+        setrlimit(RLIMIT_NPROC, &nproc_limit);
         signal(SIGPIPE, SIG_IGN);
 
         setuid(lowprivid);
