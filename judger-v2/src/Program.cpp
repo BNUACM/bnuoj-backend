@@ -1,3 +1,5 @@
+#include <cerrno>
+
 #include "Program.h"
 #include "program_init.h"
 #include "Logger.h"
@@ -94,6 +96,9 @@ string Program::Inttostring(int x) {
 }
 
 int Program::Compile(string source, int language) {
+  if (is_dangerous_code(source, language)) {
+    return 3;
+  }
   cinfo_filename = CONFIG->GetTmpfile_path() + tmpnam() + ".txt";
   if (language != JAVALANG)
     base_filename = CONFIG->GetTmpfile_path() + tmpnam();
@@ -254,13 +259,15 @@ int Program::Excution() {
     struct rusage rinfo;
     setrlimit(RLIMIT_CPU, &runtime);
     struct user_regs_struct reg;
-    struct rlimit time_limit, output_limit;
+    struct rlimit time_limit, output_limit, nproc_limit;
 
     time_limit.rlim_cur = case_time_limit < total_time_limit - time_used ?
         case_time_limit : total_time_limit - time_used;
     time_limit.rlim_cur = (time_limit.rlim_cur + 999) / 1000;
     if (time_limit.rlim_cur <= 0) time_limit.rlim_cur = 1;
     time_limit.rlim_max = time_limit.rlim_cur + 1;
+
+    nproc_limit.rlim_cur = nproc_limit.rlim_max = 1;
 
     if ((pid = fork()) == 0) {
       LOGGER->addIdentifier(getpid(), "Runner");
@@ -273,6 +280,7 @@ int Program::Excution() {
       output_limit.rlim_max = output_limit.rlim_cur =
           MAX_OUTPUT_LIMIT * 1024 * 1024;
       setrlimit(RLIMIT_FSIZE, &output_limit);
+      setrlimit(RLIMIT_NPROC, &nproc_limit);
 
       setuid(lowprivid);
       ptrace(PTRACE_TRACEME, 0, NULL, NULL);
@@ -579,6 +587,9 @@ void Program::Trytocompile(string source, int language) {
   } else if (res == 2) {
     //COMPILE ERROR
     result = "Compile Error";
+    return;
+  } else if (res == 3) {
+    result = "Restricted Function";
     return;
   }
   int cnt = 0;

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   GlobalHelpers.h
  * Author: 51isoft
  *
@@ -35,6 +35,7 @@ const string currentDate();
 vector<string> split(const string &, char, bool);
 vector<string> split(const string &, char);
 void charset_convert(const char *, const char *, char *, size_t, char *, size_t);
+bool is_dangerous_code(const string& source, int language);
 #define CONFIG Config::Getinstance()
 #define LOG Logger::Getinstance()->log
 #define LOGGER Logger::Getinstance()

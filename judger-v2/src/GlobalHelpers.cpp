@@ -1,4 +1,5 @@
 #include "GlobalHelpers.h"
+#include "chaclient.h"
 
 /**
  * Convert an integer to a string
@@ -270,4 +271,25 @@ void charset_convert(const char * from_charset, const char * to_charset,
     throw Exception("Charset conversion Failed");
   }
   iconv_close(cd);
+}
+
+/**
+ * Detect dangerous code such as __asm__ in c/c++
+ * @param string source
+ * @param int language
+ * @return bool
+ */
+bool is_dangerous_code(const string& source, int language) {
+    switch(language) {
+    case CPPLANG:
+    case CPP11LANG:
+    case CLANG:
+    case CLANGLANG:
+    case CLANGPPLANG:
+        if (source.find("__asm__") != string::npos) {
+            return true;
+        }
+        break;
+    }
+    return false;
 }
